@@ -1,0 +1,82 @@
+/*
+#panel {
+	background-color: black;
+}
+
+MplayerWindow, MplayerLayer, #mplayerwindowlogo {
+	background-color: transparent;
+}
+*/
+
+QLabel#floating_control_time {
+	background-color: black;
+	color: white;
+}
+
+
+QStatusBar,
+QStatusBar QLabel {
+	background: black;
+	color: white;
+}
+
+QStatusBar::item {
+	border: none;
+}
+
+QToolTip {
+	background-color: lightyellow;
+	color: black;
+	padding: 0px;
+	margin: 0px;
+	/*
+	border: 1px solid silver;
+	border-radius: 2px;
+	font-size: 14px;
+	*/
+	border: 0px;
+}
+
+ShareButton {
+	margin: 0px;
+	padding: 1px;
+	background-color: black;
+	border: 2px solid transparent;
+	outline: none;
+}
+
+ShareButton:hover {
+	/*
+	background-color: black;
+	border: 2px solid lightblue;
+	border-radius: 6px;
+	*/
+}
+
+ShareButton:pressed {
+	background-color: black;
+	border: 2px solid lightblue;
+	border-radius: 6px;
+}
+
+#support_button {
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+	color: white;
+	border: 2px solid transparent;
+	outline: none;
+	font-size: 12px;
+}
+
+#support_button:hover {
+	color: yellow;
+}
+
+#support_button:pressed {
+	background-color: lightblue;
+	color: black;
+	border: 2px solid lightblue;
+	border-radius: 6px;
+}
+
