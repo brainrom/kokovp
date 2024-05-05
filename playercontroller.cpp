@@ -1,0 +1,203 @@
+#include "playercontroller.h"
+#include "extensions.h"
+#include "playerwidget.h"
+
+PlayerController::PlayerController(PlayerWidget *parent)
+    : QObject{parent}
+{
+    p = parent;
+    prop("volume")->set(50);
+    prop("pause")->set(true);
+    connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleFileLoad);
+    connect(p, &PlayerWidget::endFile, this, &PlayerController::endFile);
+    connect(p, &PlayerWidget::endFile, this, &PlayerController::handleFileEnd);
+}
+
+PropertyObserver *PlayerController::prop(QString name)
+{
+    return p->propertyObserver(name);
+}
+
+void PlayerController::setProp(const QString &name, const QVariant &value)
+{
+    p->setProp(name, value);
+}
+
+QVariant PlayerController::getProp(const QString &name) const
+{
+    return p->getProp(name);
+}
+
+void PlayerController::setOption(const QString &name, const QVariant &value)
+{
+    p->setOption(name, value);
+}
+
+void PlayerController::handleFileEnd()
+{
+    haveFile = false;
+    if (!queuedFile.isEmpty())
+    {
+        QUrl f = queuedFile;
+        queuedFile = QUrl();
+        open(f);
+    }
+}
+
+void PlayerController::searchWithMaxDepth(QStringList &outList, const QStringList &filter, QDir dir, int maxDepth, int depth)
+{
+    if (depth>maxDepth)
+        return;
+
+    dir.setNameFilters(filter);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+    QFileInfoList fileList = dir.entryInfoList();
+    if (fileList.size()>0)
+        outList.append(dir.path());
+
+    dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QFileInfoList dirList = dir.entryInfoList();
+    for (auto &e : dirList)
+        searchWithMaxDepth(outList, filter, QDir(e.filePath()), maxDepth, depth+1);
+}
+
+void PlayerController::open(const QUrl &file)
+{
+    if (haveFile)
+    {
+        queuedFile = file;
+        return stop();
+    }
+    p_tracks.clear();
+
+    // Here we need to scan siblings folder for possible external subtitles and audio
+    //, then set it to sub-file-paths and audio-file-paths OPTIONs (not properties)
+    if (file.isLocalFile())
+    {
+        QDir mediaDir = QFileInfo(file.toLocalFile()).absoluteDir();
+
+        if (p_extSubMaxDepth>=0 && p_extSubMode!="no")
+        {
+            QStringList subsFolders;
+            searchWithMaxDepth(subsFolders, Extensions.subtitles().forDirFilter(), mediaDir, p_extSubMaxDepth);
+            p->setOption("sub-auto", p_extSubMode);
+            p->setOption("sub-file-paths", subsFolders.join(':'));
+        }
+
+        if (p_extAudioMaxDepth>=0 && p_extAudioMode!="no")
+        {
+            QStringList audioFolders;
+            searchWithMaxDepth(audioFolders, Extensions.audio().forDirFilter(), mediaDir, p_extAudioMaxDepth);
+            p->setOption("audio-file-auto", p_extAudioMode);
+            p->setOption("audio-file-paths", audioFolders.join(':'));
+        }
+    }
+
+    p->command(QStringList{"loadfile", file.path()});
+}
+
+void PlayerController::stop()
+{
+    const static QVariantList cmd = QVariantList({"stop"});
+    p->command(cmd);
+    p_tracks.clear();
+    emit tracksUpdated();
+}
+
+void PlayerController::togglePlayback()
+{
+    p->setProp("pause", isPlaying());
+}
+
+void PlayerController::seekAbsolute(double s)
+{
+    p->command(QVariantList({"seek", s, "absolute"}));
+}
+
+void PlayerController::seekRelative(double s)
+{
+    p->command(QVariantList({"seek", s, "relative"}));
+}
+
+void PlayerController::setScreenshotOpts(const QString &dir, const QString &scrTemplate, const QString &format)
+{
+    p->setProp("screenshot-dir", dir);
+    p->setProp("screenshot-template", scrTemplate);
+    p->setProp("screenshot-format", format);
+}
+
+void PlayerController::screenshot(const QString &outPath, bool includeSubs)
+{
+    const char *scrFlags = includeSubs ? "subtitles" : "video";
+    if (outPath.length()>0)
+        p->command(QVariantList({"screenshot-to-file", outPath, scrFlags}));
+    else
+        p->command(QVariantList({"screenshot", scrFlags}));
+}
+
+void PlayerController::subSeek(int skip, bool secondary)
+{
+    p->command(QVariantList({"sub-seek", skip, secondary ? "secondary" : "primary"}));
+}
+
+void PlayerController::subStep(int skip, bool secondary)
+{
+    p->command(QVariantList({"sub-step", skip, secondary ? "secondary" : "primary"}));
+}
+
+void PlayerController::frameStep(int step) {
+    const static QVariantList cmd_forward = QVariantList({"frame-step"});
+    const static QVariantList cmd_back = QVariantList({"frame-back-step"});
+
+    switch (step)
+    {
+    case 1:
+        return p->command(cmd_forward);
+    case -1:
+        return p->command(cmd_back);
+    };
+}
+
+bool PlayerController::isPlaying()
+{
+    return !getProp("pause").toBool();
+}
+
+void PlayerController::handleFileLoad()
+{
+    lastFile = currentFile();
+    haveFile = true;
+    bool ok;
+    int tracksCount = getProp("track-list/count").toInt(&ok);
+    assert(ok);
+    for (int i = 0; i<tracksCount; i++)
+    {
+        QString trackAddr = QString("track-list/%1/").arg(i);
+        Track t;
+        t.id = getProp(trackAddr + "id").toInt();
+        t.title = getProp(trackAddr + "title").toString();
+        t.lang = getProp(trackAddr + "lang").toString();
+        t.isExternal = getProp(trackAddr + "external").toBool();
+        QString type = getProp(trackAddr + "type").toString();
+        if (type=="video")
+            t.type = Track::TRACK_TYPE_VIDEO;
+        else if (type=="audio")
+            t.type = Track::TRACK_TYPE_AUDIO;
+        else if (type=="sub")
+            t.type = Track::TRACK_TYPE_SUB;
+
+        if (t.isExternal)
+            t.filename = p->getProp(trackAddr + "external-filename").toString();
+
+        p_tracks.append(t);
+    }
+    //p->command(QVariantList({"vf", "clr", ""})); //SVP
+    prop("aid")->set("auto");
+    prop("vid")->set("auto");
+    prop("sid")->set("auto");
+    prop("secondary-sid")->set(-1);
+
+    p->setProp("pause", false); // Previous file can be paused, when new file is loaded, it's time to de-pause player
+    emit tracksUpdated();
+}
