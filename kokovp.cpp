@@ -294,8 +294,8 @@ void KokoVP::populateMenu()
 
     IncDecActionsPair *subSeekActions = new IncDecActionsPair(this);
     connect(subSeekActions, &IncDecActionsPair::valueChanged, player, &PlayerController::subSeekPrimary);
-    subSeekActions->setIncAction(new ActionWrapper(tr("Forward to next subtitle"), QKeySequence(), subtitlesMenu, "sub_seek_plus"));
-    subSeekActions->setDecAction(new ActionWrapper(tr("Rewind to previous subtitle"), QKeySequence(), subtitlesMenu, "sub_seek_minus"));
+    subSeekActions->setIncAction(new ActionWrapper(tr("Seek to next subtitle"), QKeySequence(), subtitlesMenu, "sub_seek_plus"));
+    subSeekActions->setDecAction(new ActionWrapper(tr("Seek to previous subtitle"), QKeySequence(), subtitlesMenu, "sub_seek_minus"));
     subtitlesMenu->addSeparator();
 
     IncDecActionsPair *subStepActions = new IncDecActionsPair(this);

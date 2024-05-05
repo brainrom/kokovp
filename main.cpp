@@ -3,20 +3,27 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QLibraryInfo>
+#include "QDir"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QLocale sysLocale = QLocale::system();
+
+    QTranslator qtTranslator;
+    if(qtTranslator.load(sysLocale, "qtbase_", QString(), QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+        a.installTranslator(&qtTranslator);
+
     QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = "KokoVP_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
-    }
+    if (translator.load(sysLocale, "KokoVP_", QString(), ":/i18n"))
+        a.installTranslator(&translator);
+
+    QDir d(":/");
+    for(auto &e : d.entryList())
+        qDebug() << e;
+
     KokoVP w;
     w.showNormal();
 
