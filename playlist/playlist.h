@@ -1,6 +1,7 @@
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
+#include <QUrl>
 #include <QDockWidget>
 
 class PlaylistModel;

@@ -20,10 +20,6 @@ int main(int argc, char *argv[])
     if (translator.load(sysLocale, "KokoVP_", QString(), ":/i18n"))
         a.installTranslator(&translator);
 
-    QDir d(":/");
-    for(auto &e : d.entryList())
-        qDebug() << e;
-
     KokoVP w;
     w.showNormal();
 

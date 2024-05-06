@@ -19,10 +19,10 @@
 #ifndef FILESETTINGS_HASH_H
 #define FILESETTINGS_HASH_H
 
-#include <QList>
-#include <QString>
-#include <QMap>
 #include <QObject>
+#include <QList>
+#include <QMap>
+#include <QVariant>
 
 class PlayerController;
 
