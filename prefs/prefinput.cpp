@@ -36,7 +36,7 @@ void PrefInput::load()
 {
     actsModel->setQActionList(KokoVP::i()->actions());
 
-    QStringList allowedBtnsActions = { "fullscreen", "play_pause", "show_context_menu" }; //TODO: can be extended...
+    QStringList allowedBtnsActions = { "fullscreen", "play_pause", "show_context_menu", "mute" }; //TODO: can be extended...
 
     const QActionMap &actions = KokoVP::i()->actionsMap();
 
