@@ -8,7 +8,7 @@ struct PlaylistItem
 {
     PlaylistItem(QUrl path = QUrl())
         : path(std::move(path)) {
-        label = this->path.fileName(); // TODO: this is the quckfix to provide at least some labels, later labels reading from mpv should be done
+        label = this->path.fileName(); // Using filename as lablel, when file is loaded, mpv may provide human-readable video's name
     }
 
     QUrl path;
@@ -47,6 +47,7 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     int currentRow() { return current.row(); }
     void setRowCurrent(int row);
+    void setCurrentRowMetainfo(QString label, double duration);
 
     QStringList mimeTypes() const override;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;

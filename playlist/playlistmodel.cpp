@@ -7,7 +7,7 @@
 #include <QFileInfo>
 
 PlaylistModel::PlaylistModel(QObject *parent) : QAbstractTableModel{parent} {
-    columnNames = {tr("Name")/*, tr("Duration")*/ }; //TODO: duration also needs parsing from mpv
+    columnNames = {tr("Name"), tr("Duration") };
 }
 
 bool PlaylistModel::addURLs(const QList<QUrl> &urls, int row)
@@ -205,6 +205,15 @@ void PlaylistModel::setRowCurrent(int row)
     current = index(row, 0);
     emit dataChanged(prevCurrent, prevCurrent, QList<int>{CurrentRole});
     emit dataChanged(current, current, QList<int>{CurrentRole});
+}
+
+void PlaylistModel::setCurrentRowMetainfo(QString label, double duration)
+{
+    if (currentRow()<0)
+        return;
+    PlaylistItem &i = values[currentRow()];
+    i.label = label;
+    i.duration = duration;
 }
 
 Qt::ItemFlags PlaylistModel::flags(const QModelIndex &index) const

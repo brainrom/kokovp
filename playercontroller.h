@@ -66,6 +66,7 @@ public:
 
 signals:
     void tracksUpdated();
+    void fileMetaUpdated(QString label, double duration);
     void endFile(bool wasStopped);
 private:
     void handleFileEnd();

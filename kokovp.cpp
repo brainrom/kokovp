@@ -58,6 +58,7 @@ KokoVP::KokoVP(QWidget *parent)
     createPlaylistDock();
 
     connect(player, &PlayerController::tracksUpdated, this, &KokoVP::handleTracks);
+    connect(player, &PlayerController::fileMetaUpdated, playlist, &Playlist::setCurrentRowMetainfo);
     connect(player, &PlayerController::endFile, this, &KokoVP::handleEOF);
     connect(playerWidget, &PlayerWidget::draggedURLS, playlist, &Playlist::addURLs);
     connect(playlist, &Playlist::playRequest, this, qOverload<QUrl>(&KokoVP::playFile));

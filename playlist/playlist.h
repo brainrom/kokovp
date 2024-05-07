@@ -14,6 +14,7 @@ class Playlist : public QWidget
 public:
     explicit Playlist(QWidget *parent = nullptr);
     ~Playlist();
+    void setCurrentRowMetainfo(QString label, double duration);
     bool addURLs(const QList<QUrl> &urls);
     void prev();
     void next();

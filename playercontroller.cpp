@@ -200,4 +200,5 @@ void PlayerController::handleFileLoad()
 
     p->setProp("pause", false); // Previous file can be paused, when new file is loaded, it's time to de-pause player
     emit tracksUpdated();
+    emit fileMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
 }

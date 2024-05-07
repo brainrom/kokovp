@@ -128,6 +128,11 @@ Playlist::~Playlist()
     Cache::i().sync();
 }
 
+void Playlist::setCurrentRowMetainfo(QString label, double duration)
+{
+    plModel->setCurrentRowMetainfo(label, duration);
+}
+
 bool Playlist::addURLs(const QList<QUrl> &urls)
 {
     return plModel->addURLs(urls);
