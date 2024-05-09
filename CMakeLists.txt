@@ -108,8 +108,14 @@ qt_add_resources(QRC_CPP icons/res.qrc)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
-add_executable(KokoVP ${MOC_FILES} ${FORMS} ${MAIN_SRC} ${QRC_CPP})
-target_link_libraries(KokoVP ${LIBRARIES})
+add_executable(kokovp ${MOC_FILES} ${FORMS} ${MAIN_SRC} ${QRC_CPP})
+target_link_libraries(kokovp ${LIBRARIES})
 
-qt_add_resources(KokoVP "translations" BASE ${CMAKE_BINARY_DIR} PREFIX "i18n" FILES ${QM_FILES})
+qt_add_resources(kokovp "translations" BASE ${CMAKE_BINARY_DIR} PREFIX "i18n" FILES ${QM_FILES})
 # Awesome ¯\_(ツ)_/¯
+
+include(GNUInstallDirs)
+install(TARGETS kokovp
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
