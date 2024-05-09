@@ -5,6 +5,7 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include "QDir"
+#include "singleinstance.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +21,19 @@ int main(int argc, char *argv[])
     if (translator.load(sysLocale, "KokoVP_", QString(), ":/i18n"))
         a.installTranslator(&translator);
 
+    SingleInstance inst("KokoVP", &a);
+    if (inst.connectServer())
+    {
+        inst.sendMessage("testmsg");
+        inst.closeSocket();
+        return 0;
+    }
+
+    if (!inst.hostServer())
+        return -1;
+
     KokoVP w;
+    QObject::connect(&inst, &SingleInstance::newMessage, &w, &KokoVP::handleNewMessage);
     w.showNormal();
 
     return a.exec();

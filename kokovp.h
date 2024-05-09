@@ -24,6 +24,7 @@ public:
     ~KokoVP();
     static KokoVP *i() { return inst; }
     QActionMap actionsMap() const { return p_actionsMap; }
+    void handleNewMessage(QString msg);
 private:
     void toggleFullscreen(bool on);
 

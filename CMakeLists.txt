@@ -4,8 +4,8 @@ project(KokoVP)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets)
+find_package(QT NAMES Qt6)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets Network)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(mpv REQUIRED mpv)
 
@@ -14,6 +14,7 @@ set(LIBRARIES
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+    Qt${QT_VERSION_MAJOR}::Network
     ${mpv_LIBRARIES}
 )
 
@@ -26,6 +27,7 @@ qt_wrap_cpp(MOC_FILES
     playercontroller.h
     tracksmenu.h
     autohidewidget.h
+    singleinstance.h
 
     playlist/playlistmodel.h
     playlist/playlist.h
@@ -64,6 +66,7 @@ set(MAIN_SRC
     helper.cpp
     cache.cpp
     extensions.cpp
+    singleinstance.cpp
 
     playlist/playlistmodel.cpp
     playlist/playlist.cpp

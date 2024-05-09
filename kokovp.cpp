@@ -139,6 +139,11 @@ KokoVP::~KokoVP()
     p_actionsMap.value("stop")->trigger();
 }
 
+void KokoVP::handleNewMessage(QString msg)
+{
+    qDebug() << msg;
+}
+
 void KokoVP::toggleFullscreen(bool on)
 {
     if (on)
