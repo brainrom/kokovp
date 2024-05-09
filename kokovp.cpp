@@ -16,6 +16,7 @@
 #include "actions/volumeslideraction.h"
 #include "actions/timeslideraction.h"
 #include "actions/seekinterface.h"
+#include "actions/incdecwheelaction.h"
 
 #include "tracksmenu.h"
 #include "config.h"
@@ -227,10 +228,12 @@ void KokoVP::populateMenu()
     ActionWrapper *stopAct = new ActionWrapper(tr("Stop"), Qt::Key_X, playMenu, "stop", QIcon(":/icons/default/stop.png"));
     connect(stopAct, &QAction::triggered, player, &PlayerController::stop);
 
-    IncDecActionsPair *framesActions = new IncDecActionsPair(this);
-    connect(framesActions, &IncDecActionsPair::valueChanged, player, &PlayerController::frameStep);
-    framesActions->setDecAction(new ActionWrapper(tr("Previous frame"), Qt::Key_Comma, playMenu, "frame_back_step"));
-    framesActions->setIncAction(new ActionWrapper(tr("Next frame"), Qt::Key_Period, playMenu, "frame_step"));
+    IncDecWheelAction *framesActions = new IncDecWheelAction("Frame", playMenu);
+    connect(framesActions, &IncDecWheelAction::valueChanged, player, &PlayerController::frameStep);
+    framesActions->setNamePrefix("frame");
+    framesActions->setLabelTemplate(tr("%1 frame"));
+    framesActions->setDecOptions(tr("Previous"), Qt::Key_Comma);
+    framesActions->setIncOptions(tr("Next"), Qt::Key_Period);
 
     seek = new SeekInterface(playMenu);
     connect(seek, &SeekInterface::seek, player, &PlayerController::seekRelative);

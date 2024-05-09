@@ -40,6 +40,7 @@ qt_wrap_cpp(MOC_FILES
     actions/seekinterface.h
     actions/bistableaction.h
     actions/incdecactions.h
+    actions/incdecwheelaction.h
 
     prefs/prefdialog.h
     prefs/prefsection.h
@@ -79,6 +80,7 @@ set(MAIN_SRC
     actions/seekinterface.cpp
     actions/bistableaction.cpp
     actions/incdecactions.cpp
+    actions/incdecwheelaction.cpp
 
     prefs/prefdialog.cpp
     prefs/prefmain.cpp
