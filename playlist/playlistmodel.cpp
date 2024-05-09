@@ -214,6 +214,7 @@ void PlaylistModel::setCurrentRowMetainfo(QString label, double duration)
     PlaylistItem &i = values[currentRow()];
     i.label = label;
     i.duration = duration;
+    emit dataChanged(index(currentRow(), COL_LABEL), index(currentRow(), COL_DURATION), QList<int>{Qt::DisplayRole});
 }
 
 Qt::ItemFlags PlaylistModel::flags(const QModelIndex &index) const
