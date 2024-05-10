@@ -99,7 +99,7 @@ void PlayerController::open(const QUrl &file)
             QStringList subsFolders;
             searchWithMaxDepth(subsFolders, Extensions.subtitles().forDirFilter(), mediaDir, p_extSubMaxDepth);
             p->setOption("sub-auto", p_extSubMode);
-            p->setOption("sub-file-paths", subsFolders.join(':'));
+            p->setOption("sub-file-paths", subsFolders);
         }
 
         if (p_extAudioMaxDepth>=0 && p_extAudioMode!="no")
@@ -107,7 +107,7 @@ void PlayerController::open(const QUrl &file)
             QStringList audioFolders;
             searchWithMaxDepth(audioFolders, Extensions.audio().forDirFilter(), mediaDir, p_extAudioMaxDepth);
             p->setOption("audio-file-auto", p_extAudioMode);
-            p->setOption("audio-file-paths", audioFolders.join(':'));
+            p->setOption("audio-file-paths", audioFolders);
         }
     }
 
