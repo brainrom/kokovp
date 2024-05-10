@@ -1,4 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
+/*  This file was part of smplayer and now part of KokoVP
+    smplayer, GUI front-end for mplayer.
     Copyright (C) 2006-2023 Ricardo Villalba <ricardo@smplayer.info>
 
     This program is free software; you can redistribute it and/or modify

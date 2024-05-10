@@ -11,10 +11,12 @@ from scratch, using modular architecture and modern technologies, sacrifying sid
  - Configurable mouse and keyboard actions
  - Remember video position and state (volume, selected tracks, etc.)
  - Video screenshots
- 
+
 ## Code features
  - Wayland, HiDPI, MultiDPI aware
  - Using libmpv OpenGL Render API
  - Built on top of Qt6
 
 Currently, the project in active state of development, so the help is welcomed.
+
+Copyright (C) 2024 Ilya Chelyadin <ilya77105@gmail.com>

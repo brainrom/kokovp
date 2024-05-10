@@ -26,16 +26,16 @@ qt_wrap_cpp(MOC_FILES
     playerwidget.h
     playercontroller.h
     tracksmenu.h
-    autohidewidget.h
+    autohidewidget.h # From SMPlayer
     singleinstance.h
 
     playlist/playlistmodel.h
     playlist/playlist.h
 
-    actions/timelabelaction.h
-    actions/volumeslideraction.h
-    actions/timeslider.h
-    actions/timeslideraction.h
+    actions/timelabelaction.h # From SMPlayer
+    actions/volumeslideraction.h # From SMPlayer
+    actions/timeslider.h # From SMPlayer
+    actions/timeslideraction.h # From SMPlayer
     actions/actionwrapper.h
     actions/seekinterface.h
     actions/bistableaction.h
@@ -52,7 +52,7 @@ qt_wrap_cpp(MOC_FILES
     prefs/prefextfile.h
     prefs/seekwidget.h
 
-    persistency/filesettingshash.h
+    persistency/filesettingshash.h # From SMPlayer
 )
 
 set(MAIN_SRC
@@ -62,19 +62,19 @@ set(MAIN_SRC
     playerwidget.cpp
     playercontroller.cpp
     tracksmenu.cpp
-    autohidewidget.cpp
+    autohidewidget.cpp # From SMPlayer
     config.cpp
-    helper.cpp
+    helper.cpp # From SMPlayer
     cache.cpp
-    extensions.cpp
+    extensions.cpp # From SMPlayer
     singleinstance.cpp
 
     playlist/playlistmodel.cpp
     playlist/playlist.cpp
 
-    actions/timelabelaction.cpp
-    actions/volumeslideraction.cpp
-    actions/timeslider.cpp
+    actions/timelabelaction.cpp # From SMPlayer
+    actions/volumeslideraction.cpp # From SMPlayer
+    actions/timeslider.cpp # From SMPlayer
     actions/timeslideraction.cpp
     actions/actionwrapper.cpp
     actions/seekinterface.cpp
@@ -91,8 +91,8 @@ set(MAIN_SRC
     prefs/prefextfile.cpp
     prefs/seekwidget.cpp
 
-    persistency/filehash.cpp
-    persistency/filesettingshash.cpp
+    persistency/filehash.cpp # From SMPlayer
+    persistency/filesettingshash.cpp # From SMPlayer
 )
 
 set(UI
