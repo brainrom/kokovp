@@ -43,7 +43,7 @@
 #include "persistency/filesettingshash.h"
 
 // TODO: maybe move to some class. Anyway it must be static
-QString subsRewriteRule(const PlayerController::Track &t)
+QString extfolderRewriteRule(const PlayerController::Track &t)
 {
     if (!t.isExternal)
         return QString();
@@ -280,6 +280,7 @@ void KokoVP::populateMenu()
     // --- Audio ---
     // TODO: add external
     audioTracksMenu = bindTracksMenu(QIcon(":/icons/default/audio_track"), tr("Track"), "aid", audioMenu);
+    audioTracksMenu->setRewriteRule(extfolderRewriteRule);
 
     populateAudioDeviceMenu();
 
@@ -310,7 +311,7 @@ void KokoVP::populateMenu()
     // --- Subtitles ---
     // TODO: add external
     subTracksMenu = bindTracksMenu(QIcon(":/icons/default/sub"), tr("Primary track"), "sid", subtitlesMenu);
-    subTracksMenu->setRewriteRule(subsRewriteRule);
+    subTracksMenu->setRewriteRule(extfolderRewriteRule);
     secondSubTracksMenu = bindTracksMenu(QIcon(":/icons/default/sub"), tr("Secondary track"), "secondary-sid", subtitlesMenu);
     subtitlesMenu->addSeparator();
 
