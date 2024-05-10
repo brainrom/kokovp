@@ -63,8 +63,8 @@ ExtensionsClass::ExtensionsClass()
                "bik", "smk", "m4b", "wtv",
                "part", "mxf" };
 
-    _audio = { "mp2", "mp3", "mpc", "ogg", "oga", "wav", "wma", "aac"
-               "ac3", "dts", "ra", "ape", "flac", "thd", "mka", "m4a"
+    _audio = { "mp2", "mp3", "mpc", "ogg", "oga", "wav", "wma", "aac",
+               "ac3", "dts", "ra", "ape", "flac", "thd", "mka", "m4a",
                "wv", "shn", "opus" };
 
     _subtitles = { "srt", "sub", "ssa", "ass", "idx", "txt", "smi",

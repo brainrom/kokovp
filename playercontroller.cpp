@@ -24,6 +24,7 @@ PlayerController::PlayerController(PlayerWidget *parent)
     p = parent;
     prop("volume")->set(50);
     prop("pause")->set(true);
+    p->setProp("audio-file-auto-exts", Extensions.audio());
     connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleFileLoad);
     connect(p, &PlayerWidget::endFile, this, &PlayerController::endFile);
     connect(p, &PlayerWidget::endFile, this, &PlayerController::handleFileEnd);
