@@ -422,12 +422,12 @@ void KokoVP::readConfig()
     player->setProp("hr-seek-framedrop", false);
 
     if (Config::i().get("misc/glsl_enable", false).toBool())
-        player->setProp("glsl-shaders", Config::i().get("misc/glsl").toString());
+        player->setProp("glsl-shaders", Config::i().get("misc/glsl").toStringList());
     else
-        player->setProp("glsl-shaders", "");
+        player->setProp("glsl-shaders", QStringList{});
 
-    player->setOption("alang", Config::i().get("tracks/alang").toString());
-    player->setOption("slang", Config::i().get("tracks/slang").toString());
+    player->setOption("alang", Config::i().get("tracks/alang").toStringList());
+    player->setOption("slang", Config::i().get("tracks/slang").toStringList());
 }
 
 void KokoVP::insertActionsMap(QAction *action)
