@@ -63,7 +63,7 @@ void FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
 	}
 }
 
-void FileSettingsHash::saveSettingsFor(QString filename) {
+void FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
     QString config_file = configFile(filename);
     QString output_dir = QFileInfo(config_file).absolutePath();
 
@@ -83,7 +83,7 @@ void FileSettingsHash::saveSettingsFor(QString filename) {
     settings.beginGroup("props");
     for (auto &p : persistentProps)
         settings.setValue(p, currentProps.value(p));
-    settings.setValue("time-pos", currentProps.value("time-pos"));
+    settings.setValue("time-pos", saveTimepos ? currentProps.value("time-pos") : QVariant(0));
     settings.endGroup();
     settings.sync();
 }

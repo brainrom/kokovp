@@ -153,7 +153,7 @@ KokoVP::KokoVP(QWidget *parent)
 
 KokoVP::~KokoVP()
 {
-    p_actionsMap.value("stop")->trigger();
+    fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
 const QList<QUrl> KokoVP::pathsToUrls(const QStringList &paths)
@@ -482,7 +482,7 @@ void KokoVP::handleTracks()
 void KokoVP::handleEOF(bool wasStopped)
 {
     setWindowTitle("KokoVP");
-    fileSettings->saveSettingsFor(player->lastOpenFile());
+    fileSettings->saveSettingsFor(player->lastOpenFile(), wasStopped); // If file is ended, then time-pos shouldn't be saved
     player->prop("pause")->set(true);
     if (!wasStopped && Config::i().get("play_mode/next_on_eof", true).toBool())
         playlist->next();
