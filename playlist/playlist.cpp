@@ -101,16 +101,11 @@ Playlist::Playlist(QWidget *parent)
     QToolButton *tbAdd = new QToolButton(this);
     addFAct->setToolTip(tr("Add files to playlist"));
     tbAdd->setIcon(QIcon(":/icons/default/plus"));
-
-    connect(tbAdd, &QPushButton::clicked, this, &Playlist::addFiles);
     bottomBar->addWidget(tbAdd);
 
-    // TODO: add directory/add files menu (do we really need it?)
-    /*
     tbAdd->setToolTip(tr("Add new items to playlist"));
-    tbAdd->setMenu( addMenu );
+    tbAdd->setMenu(addMenu);
     tbAdd->setPopupMode(QToolButton::InstantPopup);
-    */
 
     QAction *delAct = new QAction(QIcon(":/icons/default/minus"), tr("Remove selected"), this);
     delAct->setShortcut(Config::i().get(QString("shortcuts/playlist_remove"), QKeySequence(Qt::Key_Delete)).toString());
@@ -161,7 +156,7 @@ void Playlist::addFiles()
 
 void Playlist::addDirectory()
 {
-
+    addURLs(Helper::openMediaDirectory(this));
 }
 
 void Playlist::delSelected()

@@ -72,6 +72,23 @@ const QList<QUrl> Helper::openMediaFiles(QWidget *parent)
     return s;
 }
 
+const QList<QUrl> Helper::openMediaDirectory(QWidget *parent)
+{
+    QString dirPath = QFileDialog::getExistingDirectory(parent, QApplication::translate("Helper", "Choose a directory"),
+                                                        Cache::i().get("file_open/last_file_dir", QStandardPaths::standardLocations(QStandardPaths::MoviesLocation)).toString());
+    QDir dir(dirPath);
+
+    if (!dir.exists())
+        return QList<QUrl>();
+
+    Cache::i().set("file_open/last_dir", dir.absolutePath());
+
+    QStringList paths;
+    searchWithMaxDepth(paths, Extensions.multimedia().forDirFilter(), dir, Config::i().get("file_open/open_dir_depth", 4).toInt(), true);
+
+    return pathsToUrls(paths);
+}
+
 void Helper::searchWithMaxDepth(QStringList &outList, const QStringList &filter, QDir dir, int maxDepth, bool searchForFiles, int depth)
 {
     if (depth>maxDepth)

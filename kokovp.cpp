@@ -210,8 +210,8 @@ void KokoVP::populateMenu()
     ActionWrapper *openFileAct = new ActionWrapper(tr("Files..."), QKeySequence("Ctrl+F"), openMenu, "openFile", QIcon(":/icons/default/open.png"));
     connect(openFileAct, &QAction::triggered, this, qOverload<>(&KokoVP::openFiles));
 
-    //ActionWrapper *openDirectoryAct = new ActionWrapper(tr("Directory..."), QKeySequence(), openMenu, "openDirectory", QIcon(":/icons/default/openfolder.png"));
-    //connect(openDirectoryAct, &QAction::triggered, this, qOverload<>(&KokoVP::openFile)); //TODO: folder open menu
+    ActionWrapper *openDirectoryAct = new ActionWrapper(tr("Directory..."), QKeySequence(), openMenu, "openDirectory", QIcon(":/icons/default/openfolder.png"));
+    connect(openDirectoryAct, &QAction::triggered, this, qOverload<>(&KokoVP::openDirectory));
 
     ActionWrapper *exitAct = new ActionWrapper(tr("Exit"), QKeySequence("Ctrl+Q"), openMenu, "exit", QIcon(":/icons/default/exit.png"));
     connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
@@ -422,6 +422,17 @@ void KokoVP::openFiles()
 {
     playlist->addURLs(Helper::openMediaFiles(this));
     playlist->playLast();
+}
+
+void KokoVP::openDirectory()
+{
+    const auto &urls = Helper::openMediaDirectory(this);
+    if (urls.empty())
+        return;
+
+    playlist->clear();
+    playlist->addURLs(urls);
+    playlist->playFirst();
 }
 
 void KokoVP::videoScreenshot()
