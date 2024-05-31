@@ -156,30 +156,13 @@ KokoVP::~KokoVP()
     fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
-const QList<QUrl> KokoVP::pathsToUrls(const QStringList &paths)
-{
-    QList<QUrl> ret;
-    for (auto &arg : paths)
-    {
-        QFileInfo f(arg);
-        if (f.exists())
-            ret.append(QUrl(f.absoluteFilePath()));
-    }
-    return ret;
-}
-
-void KokoVP::addURLs(const QList<QUrl> &urls)
-{
-    playlist->addURLs(urls);
-}
-
 void KokoVP::handleNewMessage(QString msg)
 {
     int del = msg.indexOf(':');
     QString cmd = msg.left(del);
     QStringList args = msg.trimmed().mid(del+1).split(',');
     if (cmd=="open")
-        addURLs(pathsToUrls(args));
+        playlist->addURLs(Helper::pathsToUrls(args));
     else if (cmd=="playlast")
         QTimer::singleShot(100, playlist, &Playlist::playLast); // Workaroun to wait until Qt event loop and libmpv will be ready
 }
@@ -437,7 +420,7 @@ void KokoVP::insertActionsMap(QAction *action)
 
 void KokoVP::openFiles()
 {
-    addURLs(Helper::openMediaFiles(this));
+    playlist->addURLs(Helper::openMediaFiles(this));
     playlist->playLast();
 }
 

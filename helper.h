@@ -22,6 +22,7 @@
 #include <QString>
 #include <QUrl>
 #include <QList>
+#include <QDir>
 
 class QWidget;
 
@@ -29,7 +30,9 @@ class Helper {
 public:
 	static QString formatTime(int secs);
     static QString timeForJumps(int secs);
-    static QList<QUrl> openMediaFiles(QWidget *parent);
+    static const QList<QUrl> openMediaFiles(QWidget *parent);
+    static const QList<QUrl> pathsToUrls(const QStringList &paths);
+    static void searchWithMaxDepth(QStringList &outList, const QStringList &filter, QDir dir, int maxDepth = 2, bool searchForFiles = false, int depth = 0);
 };
 
 #endif

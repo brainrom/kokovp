@@ -87,7 +87,6 @@ signals:
 private:
     void handleFileEnd();
     void handleFileLoad();
-    void searchWithMaxDepth(QStringList &outList, const QStringList &filter, QDir path, int maxDepth=2, int depth=0);
 
     PlayerWidget *p;
 

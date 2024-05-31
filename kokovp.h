@@ -39,8 +39,6 @@ public:
     KokoVP(QWidget *parent = nullptr);
     ~KokoVP();
     static KokoVP *i() { return inst; }
-    static const QList<QUrl> pathsToUrls(const QStringList &paths);
-    void addURLs(const QList<QUrl> &urls);
     QActionMap actionsMap() const { return p_actionsMap; }
     void handleNewMessage(QString msg);
 private:

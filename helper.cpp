@@ -23,6 +23,7 @@
 
 #include "extensions.h"
 #include "cache.h"
+#include "config.h"
 
 QString Helper::formatTime(int secs) {
 	bool negative = (secs < 0);
@@ -55,7 +56,7 @@ QString Helper::timeForJumps(int secs) {
 	}
 }
 
-QList<QUrl> Helper::openMediaFiles(QWidget *parent)
+const QList<QUrl> Helper::openMediaFiles(QWidget *parent)
 {
     QList<QUrl> s = QFileDialog::getOpenFileUrls(
     parent, QApplication::translate("Helper", "Choose a file"), Cache::i().get("file_open/last_file_dir", QStandardPaths::standardLocations(QStandardPaths::MoviesLocation)).toString(),
@@ -69,4 +70,42 @@ QList<QUrl> Helper::openMediaFiles(QWidget *parent)
         Cache::i().set("file_open/last_dir", QFileInfo(s.at(0).toLocalFile()).absolutePath());
     }
     return s;
+}
+
+void Helper::searchWithMaxDepth(QStringList &outList, const QStringList &filter, QDir dir, int maxDepth, bool searchForFiles, int depth)
+{
+    if (depth>maxDepth)
+        return;
+
+    dir.setNameFilters(filter);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+    QFileInfoList fileList = dir.entryInfoList();
+    if (fileList.size()>0)
+    {
+        if (searchForFiles)
+        {
+            for (auto &f : fileList)
+                outList.append(f.absoluteFilePath());
+        }
+        else
+            outList.append(dir.path());
+    }
+
+    dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QFileInfoList dirList = dir.entryInfoList();
+    for (auto &e : dirList)
+        searchWithMaxDepth(outList, filter, QDir(e.filePath()), maxDepth, searchForFiles, depth+1);
+}
+
+const QList<QUrl> Helper::pathsToUrls(const QStringList &paths)
+{
+    QList<QUrl> ret;
+    for (auto &arg : paths)
+    {
+        QFileInfo f(arg);
+        if (f.exists())
+            ret.append(QUrl(f.absoluteFilePath()));
+    }
+    return ret;
 }

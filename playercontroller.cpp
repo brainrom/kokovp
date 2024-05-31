@@ -17,6 +17,7 @@
 #include "playercontroller.h"
 #include "extensions.h"
 #include "playerwidget.h"
+#include "helper.h"
 
 PlayerController::PlayerController(PlayerWidget *parent)
     : QObject{parent}
@@ -61,24 +62,6 @@ void PlayerController::handleFileEnd()
     }
 }
 
-void PlayerController::searchWithMaxDepth(QStringList &outList, const QStringList &filter, QDir dir, int maxDepth, int depth)
-{
-    if (depth>maxDepth)
-        return;
-
-    dir.setNameFilters(filter);
-    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-
-    QFileInfoList fileList = dir.entryInfoList();
-    if (fileList.size()>0)
-        outList.append(dir.path());
-
-    dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
-    QFileInfoList dirList = dir.entryInfoList();
-    for (auto &e : dirList)
-        searchWithMaxDepth(outList, filter, QDir(e.filePath()), maxDepth, depth+1);
-}
-
 void PlayerController::open(const QUrl &file)
 {
     if (haveFile)
@@ -97,7 +80,7 @@ void PlayerController::open(const QUrl &file)
         if (p_extSubMaxDepth>=0 && p_extSubMode!="no")
         {
             QStringList subsFolders;
-            searchWithMaxDepth(subsFolders, Extensions.subtitles().forDirFilter(), mediaDir, p_extSubMaxDepth);
+            Helper::searchWithMaxDepth(subsFolders, Extensions.subtitles().forDirFilter(), mediaDir, p_extSubMaxDepth, false);
             p->setOption("sub-auto", p_extSubMode);
             p->setOption("sub-file-paths", subsFolders);
         }
@@ -105,7 +88,7 @@ void PlayerController::open(const QUrl &file)
         if (p_extAudioMaxDepth>=0 && p_extAudioMode!="no")
         {
             QStringList audioFolders;
-            searchWithMaxDepth(audioFolders, Extensions.audio().forDirFilter(), mediaDir, p_extAudioMaxDepth);
+            Helper::searchWithMaxDepth(audioFolders, Extensions.audio().forDirFilter(), mediaDir, p_extAudioMaxDepth, false);
             p->setOption("audio-file-auto", p_extAudioMode);
             p->setOption("audio-file-paths", audioFolders);
         }
