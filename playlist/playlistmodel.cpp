@@ -31,7 +31,7 @@ bool PlaylistModel::addURLs(const QList<QUrl> &urls, int row)
     QList<PlaylistItem> items;
     for (auto &url : urls)
         items.emplaceBack(url);
-    return addItems(row, items);
+    return addItems(items, row);
 }
 
 int PlaylistModel::rowCount(const QModelIndex &parent) const
@@ -179,7 +179,7 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
         if (row<0 || row > rowCount(QModelIndex()))
             row = rowCount();
 
-        bool res = addItems(row, movingItems);
+        bool res = addItems(movingItems, row);
         if (relCurrent>=0)
             setRowCurrent(row+relCurrent);
         return res;
@@ -243,7 +243,7 @@ Qt::ItemFlags PlaylistModel::flags(const QModelIndex &index) const
         return Qt::ItemIsDropEnabled | defaultFlags;
 }
 
-bool PlaylistModel::addItems(int row, const QList<PlaylistItem> &items)
+bool PlaylistModel::addItems(const QList<PlaylistItem> &items, int row)
 {
     if (items.count()==0)
         return false;

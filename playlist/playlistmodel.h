@@ -27,6 +27,9 @@ struct PlaylistItem
         label = this->path.fileName(); // Using filename as lablel, when file is loaded, mpv may provide human-readable video's name
     }
 
+    PlaylistItem(QUrl path, QString label, double duration)
+        : path(std::move(path)), label(std::move(label)), duration(duration) {}
+
     QUrl path;
     QString label;
     double duration=0;
@@ -50,7 +53,9 @@ class PlaylistModel : public QAbstractTableModel
     Q_OBJECT
 public:
     PlaylistModel(QObject *parent = nullptr);
+    bool addItems(const QList<PlaylistItem> &items, int row = -1);
     bool addURLs(const QList<QUrl> &urls, int row=-1);
+    const QList<PlaylistItem> &items() { return values; }
 
     enum Columns {COL_LABEL, COL_DURATION, COL_MAX};
     enum Roles {CurrentRole = Qt::UserRole +1, URLRole};
@@ -86,7 +91,6 @@ public:
         return in;
     }
 private:
-    bool addItems(int row, const QList<PlaylistItem> &items);
     QList<PlaylistItem> values;
     QPersistentModelIndex current;
     QStringList columnNames;
