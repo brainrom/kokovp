@@ -23,6 +23,7 @@
 class PlaylistModel;
 class QTableView;
 class QToolBar;
+struct PlaylistItem;
 
 class Playlist : public QWidget
 {
@@ -45,10 +46,18 @@ signals:
     void playRequest(QUrl path);
 
 private:
+    typedef const QList<PlaylistItem> (*LoadPlaylistFunc)(const QString &file);
+    typedef bool (*SavePlaylistFunc)(const QString &file, const QList<PlaylistItem> &list);
+    QMap<QString, LoadPlaylistFunc> loadFuncs;
+    QMap<QString, SavePlaylistFunc> saveFuncs;
+
     QTableView *plView;
     PlaylistModel *plModel;
     QToolBar *bottomBar;
     QMenu *contextMenu;
+
+    void loadPlaylist();
+    bool savePlaylist(QString s=QString());
 
     void addFiles();
     void addDirectory();

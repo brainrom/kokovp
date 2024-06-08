@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets Network Xml)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(mpv REQUIRED mpv)
 
@@ -15,6 +15,7 @@ set(LIBRARIES
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::OpenGLWidgets
     Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Xml
     ${mpv_LIBRARIES}
 )
 
@@ -71,6 +72,9 @@ set(MAIN_SRC
 
     playlist/playlistmodel.cpp
     playlist/playlist.cpp
+    playlist/m3ucodec.cpp
+    playlist/plscodec.cpp
+    playlist/xspfcodec.cpp
 
     actions/timelabelaction.cpp # From SMPlayer
     actions/volumeslideraction.cpp # From SMPlayer

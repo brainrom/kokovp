@@ -19,6 +19,7 @@
 #include "cache.h"
 #include "config.h"
 #include "helper.h"
+#include "extensions.h"
 
 #include <QHeaderView>
 #include <QTableView>
@@ -29,7 +30,13 @@
 #include <QPushButton>
 #include <QToolButton>
 #include <QStyledItemDelegate>
-#include <QIODevice>
+#include <QFileDialog>
+#include <QMessageBox>
+
+// Playlists codecs
+#include "m3ucodec.h"
+#include "xspfcodec.h"
+#include "plscodec.h"
 
 class PlaylistDelegate : public QStyledItemDelegate {
 public:
@@ -51,7 +58,21 @@ public:
 
 
 Playlist::Playlist(QWidget *parent)
-    : QWidget{parent}
+    : QWidget{parent},
+    loadFuncs
+    {
+        {"pls", PLSCodec::load},
+        {"xspf", XSPFCodec::load},
+        {"m3u", M3UCodec::load},
+        {"m3u8", M3UCodec::load},
+    },
+    saveFuncs
+    {
+        {"pls", PLSCodec::save},
+        {"xspf", XSPFCodec::save},
+        {"m3u", M3UCodec::save},
+        {"m3u8", M3UCodec::save},
+    }
 {
     setWindowTitle(tr("Playlist"));
 
@@ -89,6 +110,25 @@ Playlist::Playlist(QWidget *parent)
     bottomBar = new QToolBar(this);
     l->addWidget(bottomBar, 1, 0, 1, -1);
 
+    QMenu *fileMenu = new QMenu(this);
+    QAction *loadPlaylistAct = fileMenu->addAction(tr("Load..."));
+    loadPlaylistAct->setIcon(QIcon(":/icons/default/open"));
+    loadPlaylistAct->setToolTip(tr("Add files to playlist"));
+    connect(loadPlaylistAct, &QAction::triggered, this, &Playlist::loadPlaylist);
+
+    QAction *savePlaylistAct = fileMenu->addAction(tr("Save..."));
+    savePlaylistAct->setIcon(QIcon(":/icons/default/save"));
+    savePlaylistAct->setToolTip(tr("Add directory content to playlist"));
+    connect(savePlaylistAct, &QAction::triggered, this, &Playlist::savePlaylist);
+
+    QToolButton *tbFile = new QToolButton(this);
+    tbFile->setIcon(QIcon(":/icons/default/open"));
+    bottomBar->addWidget(tbFile);
+
+    tbFile->setToolTip(tr("Load/Save"));
+    tbFile->setMenu(fileMenu);
+    tbFile->setPopupMode(QToolButton::InstantPopup);
+
     QMenu *addMenu = new QMenu(this);
     QAction *addFAct = addMenu->addAction(tr("Add files..."));
     addFAct->setToolTip(tr("Add files to playlist"));
@@ -99,7 +139,6 @@ Playlist::Playlist(QWidget *parent)
     connect(addDAct, &QAction::triggered, this, &Playlist::addDirectory);
 
     QToolButton *tbAdd = new QToolButton(this);
-    addFAct->setToolTip(tr("Add files to playlist"));
     tbAdd->setIcon(QIcon(":/icons/default/plus"));
     bottomBar->addWidget(tbAdd);
 
@@ -199,6 +238,66 @@ void Playlist::playCurrent()
     if (plModel->currentRow()<0)
         return;
     emit playRequest(plModel->data(plModel->index(plModel->currentRow(), 0), PlaylistModel::URLRole).value<QUrl>());
+}
+
+// This function has been copied (and modified a little bit) from SMPlayer (program under GPL license).
+void Playlist::loadPlaylist()
+{
+    QString s = QFileDialog::getOpenFileName(
+        this, tr("Choose a file"),
+        Cache::i().get("file_open/last_file_dir").toString(),
+        tr("Playlists") + Extensions.playlist().forFilter());
+
+    if (!s.isEmpty()) {
+        Cache::i().set("file_open/last_file_dir", QFileInfo(s).absolutePath());
+
+        QString suffix = QFileInfo(s).suffix().toLower();
+        auto f = loadFuncs.value(suffix);
+
+        if (!f)
+            return;
+
+        plModel->removeRows(0, plModel->rowCount());
+        plModel->addItems(f(s));
+    }
+}
+
+// This function has been copied (and modified a little bit) from SMPlayer (program under GPL license).
+bool Playlist::savePlaylist(QString s)
+{
+    if (s.isEmpty()) {
+        s = QFileDialog::getSaveFileName(
+            this, tr("Choose a filename"),
+            Cache::i().get("file_open/last_file_dir").toString(),
+            tr("Playlists") + Extensions.playlist().forFilter());
+    }
+
+    if (s.isEmpty())
+        return false;
+
+    // If filename has no extension, add it
+    if (QFileInfo(s).suffix().isEmpty()) {
+        s = s + ".m3u";
+    }
+    if (QFileInfo::exists(s))
+    {
+        int res = QMessageBox::question( this,
+                    tr("Confirm overwrite?"),
+                    tr("The file %1 already exists.\n"
+                       "Do you want to overwrite?").arg(s),
+                    QMessageBox::Yes | QMessageBox::No | QMessageBox::NoButton);
+        if (res == QMessageBox::No ) {
+            return false;
+        }
+    }
+    Cache::i().set("file_open/last_file_dir", QFileInfo(s).absolutePath());
+
+    QString suffix = QFileInfo(s).suffix().toLower();
+    auto f = saveFuncs.value(suffix);
+    if (!f)
+        return false;
+
+    return f(s, plModel->items());
 }
 
 void Playlist::playRow(int row)
