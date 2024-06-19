@@ -158,6 +158,11 @@ Playlist::Playlist(QWidget *parent)
     clearAct->setToolTip(tr("Clear playlist"));
     bottomBar->addAction(clearAct);
 
+    QAction *shuffleAct = new QAction(QIcon(":/icons/default/shuffle"), tr("Shuffle"), this);
+    connect(shuffleAct, &QAction::triggered, plModel, &PlaylistModel::shuffle);
+    shuffleAct->setToolTip(tr("Shuffle playlist"));
+    bottomBar->addAction(shuffleAct);
+
     contextMenu = new QMenu(this);
     contextMenu->addActions(addMenu->actions());
     contextMenu->addSeparator();

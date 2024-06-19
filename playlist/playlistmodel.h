@@ -56,6 +56,7 @@ public:
     bool addItems(const QList<PlaylistItem> &items, int row = -1);
     bool addURLs(const QList<QUrl> &urls, int row=-1);
     const QList<PlaylistItem> &items() { return values; }
+    void shuffle();
 
     enum Columns {COL_LABEL, COL_DURATION, COL_MAX};
     enum Roles {CurrentRole = Qt::UserRole +1, URLRole};

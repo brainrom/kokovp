@@ -22,6 +22,9 @@
 #include <QIODevice>
 #include <QFileInfo>
 
+#include <algorithm>
+#include <random>
+
 PlaylistModel::PlaylistModel(QObject *parent) : QAbstractTableModel{parent} {
     columnNames = {tr("Name"), tr("Duration") };
 }
@@ -32,6 +35,14 @@ bool PlaylistModel::addURLs(const QList<QUrl> &urls, int row)
     for (auto &url : urls)
         items.emplaceBack(url);
     return addItems(items, row);
+}
+
+void PlaylistModel::shuffle()
+{
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(values.begin(), values.end(), g);
+    emit dataChanged(index(0, COL_LABEL), index(rowCount(), COL_MAX-1), QList<int>{Qt::DisplayRole, CurrentRole});
 }
 
 int PlaylistModel::rowCount(const QModelIndex &parent) const
