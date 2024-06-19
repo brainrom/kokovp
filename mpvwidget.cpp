@@ -95,11 +95,13 @@ void MpvWidget::initializeGL()
     void *wlDisplay = nullptr;
     void *x11Display = nullptr;
 
+#ifdef Q_OS_LINUX
     if (QNativeInterface::QWaylandApplication *wlApp = qApp->nativeInterface<QNativeInterface::QWaylandApplication>())
         wlDisplay = wlApp->display();
 
     if (QNativeInterface::QX11Application *x11App = qApp->nativeInterface<QNativeInterface::QX11Application>())
         x11Display = x11App->display();
+#endif
 
     mpv_opengl_init_params gl_init_params[1] = {get_proc_address, nullptr};
     mpv_render_param params[]{
