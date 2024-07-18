@@ -57,7 +57,9 @@ private:
     QMenu *contextMenu;
 
     void loadPlaylist();
-    bool savePlaylist(QString s=QString());
+
+    bool savePlaylist() { return savePlaylist(QString()); }
+    bool savePlaylist(QString s);
 
     void addFiles();
     void addDirectory();

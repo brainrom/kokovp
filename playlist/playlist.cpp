@@ -119,7 +119,7 @@ Playlist::Playlist(QWidget *parent)
     QAction *savePlaylistAct = fileMenu->addAction(tr("Save..."));
     savePlaylistAct->setIcon(QIcon(":/icons/default/save"));
     savePlaylistAct->setToolTip(tr("Add directory content to playlist"));
-    connect(savePlaylistAct, &QAction::triggered, this, &Playlist::savePlaylist);
+    connect(savePlaylistAct, &QAction::triggered, this, qOverload<>(&Playlist::savePlaylist));
 
     QToolButton *tbFile = new QToolButton(this);
     tbFile->setIcon(QIcon(":/icons/default/open"));
