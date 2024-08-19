@@ -4,6 +4,8 @@ project(KokoVP)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_compile_definitions(QT_NO_DEBUG_OUTPUT)
+
 find_package(QT NAMES Qt6)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets Network Xml)
 find_package(PkgConfig REQUIRED)
