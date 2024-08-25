@@ -22,6 +22,7 @@
 #include <QLibraryInfo>
 #include <QDir>
 #include <QCommandLineParser>
+#include <QIcon>
 
 #include "singleinstance.h"
 
@@ -51,6 +52,9 @@ int main(int argc, char *argv[])
     QTranslator translator;
     if (translator.load(sysLocale, "KokoVP_", QString(), ":/i18n"))
         a.installTranslator(&translator);
+
+    QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":/icons");
+    QIcon::setFallbackThemeName("kokovp-default");
 
     SingleInstance inst("KokoVP", &a);
 

@@ -244,7 +244,7 @@ void KokoVP::populateMenu()
 
     ActionWrapper *prevAct = new ActionWrapper(tr("Previous"), QKeySequence("Ctrl+,"), playMenu, "prev", QIcon::fromTheme("media-skip-backward"));
     connect(prevAct, &QAction::triggered, playlist, &Playlist::prev);
-    ActionWrapper *nextAct = new ActionWrapper(tr("Next"), QKeySequence("Ctrl+."), playMenu, "next", QIcon::fromTheme("media-skip-backward"));
+    ActionWrapper *nextAct = new ActionWrapper(tr("Next"), QKeySequence("Ctrl+."), playMenu, "next", QIcon::fromTheme("media-skip-forward"));
     connect(nextAct, &QAction::triggered, playlist, &Playlist::next);
 
     // --- Video ---

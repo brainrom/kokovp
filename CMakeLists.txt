@@ -110,7 +110,7 @@ set(UI
 
 qt_wrap_ui(FORMS ${UI})
 qt_create_translation(QM_FILES ${TS_FILES} ${MAIN_SRC})
-qt_add_resources(QRC_CPP icons/res.qrc)
+qt_add_resources(QRC_CPP icons.qrc)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
