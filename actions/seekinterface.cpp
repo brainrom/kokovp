@@ -32,10 +32,10 @@ SeekInterface::SeekInterface(QMenu *parent)
     QList<QKeySequence> forwardShortcuts = { Qt::Key_Right, Qt::Key_Up,  Qt::Key_PageUp };
     actsCount = qMax(actsCount, forwardShortcuts.size());
 
-    QList<QIcon> rewindIcons = { QIcon(":/icons/default/rewind10s"), QIcon(":/icons/default/rewind1m"), QIcon(":/icons/default/rewind10m")  };
+    QList<QIcon> rewindIcons = { QIcon::fromTheme("rewind10s"), QIcon::fromTheme("rewind1m"), QIcon::fromTheme("rewind10m")  };
     actsCount = qMax(actsCount, rewindIcons.size());
 
-    QList<QIcon> forwardIcons = { QIcon(":/icons/default/forward10s"), QIcon(":/icons/default/forward1m"), QIcon(":/icons/default/forward10m")  };
+    QList<QIcon> forwardIcons = { QIcon::fromTheme("forward10s"), QIcon::fromTheme("forward1m"), QIcon::fromTheme("forward10m")  };
     actsCount = qMax(actsCount, forwardIcons.size());
 
     // All these lists should be same size

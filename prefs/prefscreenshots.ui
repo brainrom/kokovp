@@ -14,8 +14,7 @@
    <string>Screenshots</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icons/res.qrc">
-    <normaloff>:/icons/default/screenshots.png</normaloff>:/icons/default/screenshots.png</iconset>
+   <iconset theme="accessories-screenshot-tool"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="1">

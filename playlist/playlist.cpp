@@ -112,17 +112,17 @@ Playlist::Playlist(QWidget *parent)
 
     QMenu *fileMenu = new QMenu(this);
     QAction *loadPlaylistAct = fileMenu->addAction(tr("Load..."));
-    loadPlaylistAct->setIcon(QIcon(":/icons/default/open"));
+    loadPlaylistAct->setIcon(QIcon::fromTheme("document-open"));
     loadPlaylistAct->setToolTip(tr("Add files to playlist"));
     connect(loadPlaylistAct, &QAction::triggered, this, &Playlist::loadPlaylist);
 
     QAction *savePlaylistAct = fileMenu->addAction(tr("Save..."));
-    savePlaylistAct->setIcon(QIcon(":/icons/default/save"));
+    savePlaylistAct->setIcon(QIcon::fromTheme("document-save"));
     savePlaylistAct->setToolTip(tr("Add directory content to playlist"));
     connect(savePlaylistAct, &QAction::triggered, this, qOverload<>(&Playlist::savePlaylist));
 
     QToolButton *tbFile = new QToolButton(this);
-    tbFile->setIcon(QIcon(":/icons/default/open"));
+    tbFile->setIcon(QIcon::fromTheme("document-open"));
     bottomBar->addWidget(tbFile);
 
     tbFile->setToolTip(tr("Load/Save"));
@@ -139,26 +139,26 @@ Playlist::Playlist(QWidget *parent)
     connect(addDAct, &QAction::triggered, this, &Playlist::addDirectory);
 
     QToolButton *tbAdd = new QToolButton(this);
-    tbAdd->setIcon(QIcon(":/icons/default/plus"));
+    tbAdd->setIcon(QIcon::fromTheme("list-add"));
     bottomBar->addWidget(tbAdd);
 
     tbAdd->setToolTip(tr("Add new items to playlist"));
     tbAdd->setMenu(addMenu);
     tbAdd->setPopupMode(QToolButton::InstantPopup);
 
-    QAction *delAct = new QAction(QIcon(":/icons/default/minus"), tr("Remove selected"), this);
+    QAction *delAct = new QAction(QIcon::fromTheme("list-remove"), tr("Remove selected"), this);
     delAct->setShortcut(Config::i().get(QString("shortcuts/playlist_remove"), QKeySequence(Qt::Key_Delete)).toString());
     connect(delAct, &QAction::triggered, this, &Playlist::delSelected);
     delAct->setToolTip(tr("Remove selected items from playlist"));
     bottomBar->addAction(delAct);
 
-    QAction *clearAct = new QAction(QIcon(":/icons/default/delete"), tr("Clear"), this);
+    QAction *clearAct = new QAction(QIcon::fromTheme("edit-delete"), tr("Clear"), this);
     clearAct->setShortcut(Config::i().get(QString("shortcuts/playlist_clear"), QKeySequence("Shift+Del")).toString());
     connect(clearAct, &QAction::triggered, this, &Playlist::clear);
     clearAct->setToolTip(tr("Clear playlist"));
     bottomBar->addAction(clearAct);
 
-    QAction *shuffleAct = new QAction(QIcon(":/icons/default/shuffle"), tr("Shuffle"), this);
+    QAction *shuffleAct = new QAction(QIcon::fromTheme("media-playlist-shuffle"), tr("Shuffle"), this);
     connect(shuffleAct, &QAction::triggered, plModel, &PlaylistModel::shuffle);
     shuffleAct->setToolTip(tr("Shuffle playlist"));
     bottomBar->addAction(shuffleAct);

@@ -26,7 +26,7 @@ PrefScreenshots::PrefScreenshots(QWidget *parent)
 {
     ui->setupUi(this);
     QAction *selectPath = new QAction(tr("Browse"),this);
-    selectPath->setIcon(QIcon(":/icons/default/folder_open"));
+    selectPath->setIcon(QIcon::fromTheme("folder-open"));
     connect(selectPath, &QAction::triggered, this, &PrefScreenshots::selectScreenshotsFolder);
     ui->screenshot_edit->addAction(selectPath, QLineEdit::TrailingPosition);
 }

@@ -14,8 +14,7 @@
    <string>Input</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icons/res.qrc">
-    <normaloff>:/icons/default/input_devices.png</normaloff>:/icons/default/input_devices.png</iconset>
+   <iconset theme="input-keyboard"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <property name="spacing">
