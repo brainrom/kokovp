@@ -32,7 +32,7 @@ cmake --build .
 ```
 
 ## TODO
- - Beauty icon
+ - Improve kokovp-default icon set
  - Windows Build
  - Web interface for remote control
  - Lua scripting for selecting tracks
