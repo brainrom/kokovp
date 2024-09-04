@@ -26,20 +26,21 @@ class TimeSliderAction : public QWidgetAction
 {
     Q_OBJECT
 public:
-    TimeSliderAction(QWidget * parent) : QWidgetAction{parent} {};
-
-public slots:
+    TimeSliderAction(QWidget *parent);
+    void setChangeTimeOnDrag(bool on);
     void setTime(double t);
     double time();
     void setDuration(double t);
     double duration() { return totalTime; };
-
     void setWheelDelta(double t);
 
 private:
+    bool changeTimeOnDrag;
     double totalTime;
     double wheelDelta;
     QWidget *createWidget (QWidget * parent) override;
+    void onTimeChanged(double value);
+    void onDraggingTime(double value);
 
 signals:
     void timeChanged(double value);

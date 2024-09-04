@@ -19,6 +19,10 @@
 #include "timeslideraction.h"
 #include "timeslider.h"
 
+TimeSliderAction::TimeSliderAction(QWidget *parent) : QWidgetAction{parent}, changeTimeOnDrag(false), totalTime(0), wheelDelta(0)
+{
+};
+
 void TimeSliderAction::setTime(double v) {
     for (auto &w: createdWidgets())
     {
@@ -58,16 +62,33 @@ void TimeSliderAction::setWheelDelta(double t)
         TimeSlider *s = (TimeSlider*) w;
         s->setWheelDelta(t);
     }
-
 }
 
-QWidget * TimeSliderAction::createWidget ( QWidget * parent ) {
+QWidget *TimeSliderAction::createWidget(QWidget *parent) {
     TimeSlider *t = new TimeSlider(parent);
     t->setEnabled(isEnabled());
     t->setWheelDelta(wheelDelta);
 
-    connect(t, &TimeSlider::timeChanged, this, &TimeSliderAction::timeChanged);
+    connect(t, &TimeSlider::timeChanged, this, &TimeSliderAction::onTimeChanged);
+    connect(t, &TimeSlider::draggingTime, this, &TimeSliderAction::onDraggingTime);
     connect(t, &TimeSlider::draggingTime, this, &TimeSliderAction::draggingTime);
 
     return t;
+}
+
+void TimeSliderAction::setChangeTimeOnDrag(bool on)
+{
+    changeTimeOnDrag = on;
+}
+
+void TimeSliderAction::onTimeChanged(double value)
+{
+    if (!changeTimeOnDrag)
+        emit timeChanged(value);
+}
+
+void TimeSliderAction::onDraggingTime(double value)
+{
+    if (changeTimeOnDrag)
+        emit timeChanged(value);
 }
