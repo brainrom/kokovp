@@ -26,6 +26,7 @@ class PlayerWidget : public MpvWidget
     Q_OBJECT
 public:
     PlayerWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    void setAllowHideCursor(bool on);
     void setClickAction(QAction *newClickAction);
     void setDoubleClickAction(QAction *newDoubleClickAction);
     void setRightClickAction(QAction *newRightClickAction);
@@ -33,13 +34,14 @@ public:
 
 signals:
     void draggedURLS(const QList<QUrl> &urls);
-private:
 
+private:
     void showLogo() { setPaintLogo(true); }
     void hideLogo() { setPaintLogo(false); }
     void setPaintLogo(bool on);
 
     bool paintLogo;
+    bool allowHideCursor;
     QFont logoFont;
     QTimer doubleClickTimer;
 
@@ -50,12 +52,17 @@ private:
     QAction *wheelUpAct;
     QAction *wheelDownAct;
 
+    QTimer *mouseMoveTimer;
+    void updateCursorVisibility();
+
     void paintOverlay(QPainter &painter) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
 };
 
 #endif // PLAYERWIDGET_H
