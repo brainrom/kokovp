@@ -54,6 +54,8 @@ void PrefMain::load()
     ui->seek2->setTime(Config::i().get("seek2").toInt());
     Config::i().endGroup();
 
+    ui->cbTimeSliderBeh->setCurrentIndex(Config::i().get("misc/seek_on_drag").toBool() ? 0 : 1);
+
     ui->audio_lang_edit->setText(Config::i().get("tracks/alang").toString());
     ui->subtitle_lang_edit->setText(Config::i().get("tracks/slang").toString());
 }
@@ -70,6 +72,8 @@ void PrefMain::save()
     Config::i().set("seek1", ui->seek1->time());
     Config::i().set("seek2", ui->seek2->time());
     Config::i().endGroup();
+
+    Config::i().set("misc/seek_on_drag", ui->cbTimeSliderBeh->currentIndex()==0);
 
     Config::i().set("tracks/alang", ui->audio_lang_edit->text());
     Config::i().set("tracks/slang", ui->subtitle_lang_edit->text());

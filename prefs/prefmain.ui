@@ -35,7 +35,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabPlayback">
       <attribute name="title">
@@ -120,12 +120,12 @@
             <string>Behaviour of time slider:</string>
            </property>
            <property name="buddy">
-            <cstring>timeslider_behaviour_combo</cstring>
+            <cstring>cbTimeSliderBeh</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="timeslider_behaviour_combo">
+          <widget class="QComboBox" name="cbTimeSliderBeh">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>

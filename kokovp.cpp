@@ -117,7 +117,6 @@ KokoVP::KokoVP(QWidget *parent)
     //Shouldn't use addAction, because these actions shouldn't appear in actions() list, since they aren't triggerable, but should be in actionsMap for bars populating
     insertActionsMap(tlAct);
 
-
     VolumeSliderAction *vsAct = new VolumeSliderAction(this);
     vsAct->setObjectName("volume_slider");
     connect(player->prop("volume"), &PropertyObserver::changedDouble, vsAct, &VolumeSliderAction::setValue);
@@ -388,6 +387,10 @@ void KokoVP::readConfig()
     seek->setStepTime(1, Config::i().get("seek1", 30).toInt());
     seek->setStepTime(2, Config::i().get("seek2", 300).toInt());
     Config::i().endGroup();
+
+    TimeSliderAction *tsAct = dynamic_cast<TimeSliderAction*>(p_actionsMap.value("time_slider"));
+    assert(tsAct);
+    tsAct->setChangeTimeOnDrag(Config::i().get("misc/seek_on_drag", false).toBool());
 
     // Mouse actions
     playerWidget->setClickAction(p_actionsMap.value(Config::i().get("actions/single_video_click", "play_pause").toString()));
