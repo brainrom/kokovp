@@ -33,6 +33,11 @@ PlayerWidget::PlayerWidget(QWidget *parent, Qt::WindowFlags f) : MpvWidget{paren
     wheelUpAct = nullptr;
     wheelDownAct = nullptr;
 
+    mouseMoveTimer = new QTimer(this);
+    mouseMoveTimer->setInterval(3000);
+    mouseMoveTimer->setSingleShot(true);
+    connect(mouseMoveTimer, &QTimer::timeout, this, &PlayerWidget::updateCursorVisibility);
+
     connect(this, &MpvWidget::fileLoaded, this, &PlayerWidget::hideLogo);
     connect(this, &MpvWidget::endFile, this, &PlayerWidget::showLogo);
 }
@@ -41,6 +46,26 @@ void PlayerWidget::setPaintLogo(bool on)
 {
     paintLogo = on;
     update();
+    updateCursorVisibility();
+}
+
+void PlayerWidget::setAllowHideCursor(bool on)
+{
+    allowHideCursor = on;
+    updateCursorVisibility();
+}
+
+void PlayerWidget::updateCursorVisibility()
+{
+    if (!paintLogo && allowHideCursor)
+    {
+        if (sender()==mouseMoveTimer) // A little hack to catch timer's signal
+            setCursor(Qt::BlankCursor);
+        else
+            mouseMoveTimer->start();
+    }
+    else
+        setCursor(Qt::ArrowCursor);
 }
 
 void PlayerWidget::setClickAction(QAction *newClickAction)
@@ -120,4 +145,10 @@ void PlayerWidget::wheelEvent(QWheelEvent *e)
     {
         if (e->angleDelta().y() >= 0) wheelUpAct->trigger(); else wheelDownAct->trigger();
     }
+}
+
+void PlayerWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    mouseMoveTimer->start();
+    setCursor(Qt::ArrowCursor);
 }

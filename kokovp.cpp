@@ -174,6 +174,7 @@ void KokoVP::toggleFullscreen(bool on)
         menuBar()->hide();
         bottomBar->hide();
         autoHide->activate();
+        playerWidget->setAllowHideCursor(true);
         playlistDock->setVisible(false);
     }
     else
@@ -182,6 +183,7 @@ void KokoVP::toggleFullscreen(bool on)
         menuBar()->show();
         bottomBar->show();
         autoHide->deactivate();
+        playerWidget->setAllowHideCursor(false);
         playlistDock->setVisible(Cache::i().get("gui_playlist/show").toBool());
     }
 }
