@@ -77,7 +77,7 @@ void PlayerWidget::paintOverlay(QPainter &painter)
     painter.fillRect(rect(), Qt::black);
     painter.setPen(QPen(Qt::white));
     painter.setFont(logoFont);
-    painter.drawText(rect().center(), "KokoVP");
+    painter.drawText(rect(), Qt :: AlignHCenter | Qt :: AlignVCenter,  "KokoVP");
 }
 
 void PlayerWidget::dragEnterEvent(QDragEnterEvent *event)
