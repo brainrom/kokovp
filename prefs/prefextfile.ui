@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>External files</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="system-file-manager"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>

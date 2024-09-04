@@ -208,24 +208,24 @@ void KokoVP::populateMenu()
 
     // --- Open ---
     // TODO: maybe add recent, favs?
-    ActionWrapper *openFileAct = new ActionWrapper(tr("Files..."), QKeySequence("Ctrl+F"), openMenu, "openFile", QIcon(":/icons/default/open.png"));
+    ActionWrapper *openFileAct = new ActionWrapper(tr("Files..."), QKeySequence("Ctrl+F"), openMenu, "openFile", QIcon::fromTheme("document-open"));
     connect(openFileAct, &QAction::triggered, this, qOverload<>(&KokoVP::openFiles));
 
-    ActionWrapper *openDirectoryAct = new ActionWrapper(tr("Directory..."), QKeySequence(), openMenu, "openDirectory", QIcon(":/icons/default/openfolder.png"));
+    ActionWrapper *openDirectoryAct = new ActionWrapper(tr("Directory..."), QKeySequence(), openMenu, "openDirectory", QIcon::fromTheme("folder-open"));
     connect(openDirectoryAct, &QAction::triggered, this, qOverload<>(&KokoVP::openDirectory));
 
-    ActionWrapper *exitAct = new ActionWrapper(tr("Exit"), QKeySequence("Ctrl+Q"), openMenu, "exit", QIcon(":/icons/default/exit.png"));
+    ActionWrapper *exitAct = new ActionWrapper(tr("Exit"), QKeySequence("Ctrl+Q"), openMenu, "exit", QIcon::fromTheme("application-exit"));
     connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
 
     // --- Play ---
     BistableAction *playPauseAct = new BistableAction(Qt::Key_Space, playMenu, "play_pause");
-    playPauseAct->setPassiveState(tr("Pause"), QIcon(":/icons/default/pause.png"));
-    playPauseAct->setActiveState(tr("Play"), QIcon(":/icons/default/play.png"));
+    playPauseAct->setPassiveState(tr("Pause"), QIcon::fromTheme("media-playback-pause"));
+    playPauseAct->setActiveState(tr("Play"), QIcon::fromTheme("media-playback-start"));
     connect(player->prop("pause"), &PropertyObserver::changedBool, playPauseAct, &BistableAction::switchState);
     connect(playPauseAct, &QAction::triggered, player, &PlayerController::togglePlayback);
     connect(playPauseAct, &QAction::triggered, this, &KokoVP::tryPlayCurrent);
 
-    ActionWrapper *stopAct = new ActionWrapper(tr("Stop"), Qt::Key_X, playMenu, "stop", QIcon(":/icons/default/stop.png"));
+    ActionWrapper *stopAct = new ActionWrapper(tr("Stop"), Qt::Key_X, playMenu, "stop", QIcon::fromTheme("media-playback-stop"));
     connect(stopAct, &QAction::triggered, player, &PlayerController::stop);
 
     IncDecWheelAction *framesActions = new IncDecWheelAction("Frame", playMenu);
@@ -243,27 +243,27 @@ void KokoVP::populateMenu()
     chaptersActions->setDecAction(new ActionWrapper(tr("Previous chapter"), Qt::Key_Exclam, playMenu, "prev_chapter"));
     chaptersActions->setIncAction(new ActionWrapper(tr("Next chapter"), Qt::Key_At, playMenu, "next_chapter"));
 
-    ActionWrapper *prevAct = new ActionWrapper(tr("Previous"), QKeySequence("Ctrl+,"), playMenu, "prev", QIcon(":/icons/default/previous"));
+    ActionWrapper *prevAct = new ActionWrapper(tr("Previous"), QKeySequence("Ctrl+,"), playMenu, "prev", QIcon::fromTheme("media-skip-backward"));
     connect(prevAct, &QAction::triggered, playlist, &Playlist::prev);
-    ActionWrapper *nextAct = new ActionWrapper(tr("Next"), QKeySequence("Ctrl+."), playMenu, "next", QIcon(":/icons/default/next"));
+    ActionWrapper *nextAct = new ActionWrapper(tr("Next"), QKeySequence("Ctrl+."), playMenu, "next", QIcon::fromTheme("media-skip-forward"));
     connect(nextAct, &QAction::triggered, playlist, &Playlist::next);
 
     // --- Video ---
-    ActionWrapper *fullscreenAct = new ActionWrapper(tr("Fullscreen"), Qt::Key_F, videoMenu, "fullscreen", QIcon(":/icons/default/fullscreen"));
+    ActionWrapper *fullscreenAct = new ActionWrapper(tr("Fullscreen"), Qt::Key_F, videoMenu, "fullscreen", QIcon::fromTheme("view-fullscreen"));
     fullscreenAct->setCheckable(true);
     connect(fullscreenAct, &QAction::toggled, this, &KokoVP::toggleFullscreen);
 
-    videoTracksMenu = bindTracksMenu(QIcon(":/icons/default/video_track"), tr("Track"), "vid", videoMenu);
+    videoTracksMenu = bindTracksMenu(QIcon::fromTheme("video-track"), tr("Track"), "vid", videoMenu);
 
-    ActionWrapper *screenshotWithNoSubsAct = new ActionWrapper(tr("Screenshot without subtitles"), Qt::Key_S, videoMenu, "screenshot_without_subtitles", QIcon(":/icons/default/screenshot.png"));
+    ActionWrapper *screenshotWithNoSubsAct = new ActionWrapper(tr("Screenshot without subtitles"), Qt::Key_S, videoMenu, "screenshot_without_subtitles", QIcon::fromTheme("accessories-screenshot-tool"));
     connect(screenshotWithNoSubsAct, &QAction::triggered, this, &KokoVP::videoScreenshot);
 
-    ActionWrapper *screenshotWithSubsAct = new ActionWrapper(tr("Screenshot with subtitles"), QKeySequence("Shift+S"), videoMenu, "screenshot_with_subtitles", QIcon(":/icons/default/screenshot.png"));
+    ActionWrapper *screenshotWithSubsAct = new ActionWrapper(tr("Screenshot with subtitles"), QKeySequence("Shift+S"), videoMenu, "screenshot_with_subtitles", QIcon::fromTheme("accessories-screenshot-tool"));
     connect(screenshotWithSubsAct, &QAction::triggered, this, &KokoVP::videoSubScreenshot);
 
     // --- Audio ---
     // TODO: add external
-    audioTracksMenu = bindTracksMenu(QIcon(":/icons/default/audio_track"), tr("Track"), "aid", audioMenu);
+    audioTracksMenu = bindTracksMenu(QIcon::fromTheme("multimedia-volume-control"), tr("Track"), "aid", audioMenu);
     audioTracksMenu->setRewriteRule(extfolderRewriteRule);
 
     populateAudioDeviceMenu();
@@ -276,8 +276,8 @@ void KokoVP::populateMenu()
 
     BistableAction *muteAct = new BistableAction(Qt::Key_M, audioMenu, "mute");
     muteAct->setCheckable(true);
-    muteAct->setPassiveState(tr("Mute"), QIcon(":/icons/default/volume"));
-    muteAct->setActiveState(tr("Mute"), QIcon(":/icons/default/mute"));
+    muteAct->setPassiveState(tr("Mute"), QIcon::fromTheme("audio-volume-high"));
+    muteAct->setActiveState(tr("Mute"), QIcon::fromTheme("audio-volume-muted"));
     connect(player->prop("mute"), &PropertyObserver::changedBool, muteAct, &BistableAction::switchState);
     connect(muteAct, &QAction::toggled, player->prop("mute"), &PropertyObserver::set);
 
@@ -294,9 +294,9 @@ void KokoVP::populateMenu()
 
     // --- Subtitles ---
     // TODO: add external
-    subTracksMenu = bindTracksMenu(QIcon(":/icons/default/sub"), tr("Primary track"), "sid", subtitlesMenu);
+    subTracksMenu = bindTracksMenu(QIcon::fromTheme("media-view-subtitles"), tr("Primary track"), "sid", subtitlesMenu);
     subTracksMenu->setRewriteRule(extfolderRewriteRule);
-    secondSubTracksMenu = bindTracksMenu(QIcon(":/icons/default/sub"), tr("Secondary track"), "secondary-sid", subtitlesMenu);
+    secondSubTracksMenu = bindTracksMenu(QIcon::fromTheme("media-view-subtitles"), tr("Secondary track"), "secondary-sid", subtitlesMenu);
     subtitlesMenu->addSeparator();
 
     IncDecActionsPair *subDelayActions = new IncDecActionsPair(this);
@@ -337,11 +337,11 @@ void KokoVP::populateMenu()
     subStepActions->setDecAction(new ActionWrapper(tr("Show previous subtitle"), QKeySequence(), subtitlesMenu, "sub_step_minus"));
 
     // --- Misc ---
-    ActionWrapper *prefAction = new ActionWrapper(tr("Preferences"), QKeySequence(), miscMenu, "prefs", QIcon(":/icons/default/prefs"));
+    ActionWrapper *prefAction = new ActionWrapper(tr("Preferences"), QKeySequence(), miscMenu, "prefs", QIcon::fromTheme("preferences"));
     connect(prefAction, &QAction::triggered, pref, &QDialog::show);
 
     QAction *toggleAction = playlistDock->toggleViewAction();
-    toggleAction->setIcon(QIcon(":/icons/default/playlist"));
+    toggleAction->setIcon(QIcon::fromTheme("view-media-playlist"));
     miscMenu->addAction(toggleAction);
 }
 
@@ -509,7 +509,7 @@ void KokoVP::callPropEditor(QAction *callEditorAction)
 void KokoVP::populateAudioDeviceMenu()
 {
     QMenu *audioDevicesMenu = new QMenu(tr("Audio device"), audioMenu);
-    audioDevicesMenu->setIcon(QIcon(":/icons/default/send_audio"));
+    audioDevicesMenu->setIcon(QIcon::fromTheme("audio-card"));
 
     connect(audioDevicesMenu, &QMenu::triggered, this, &KokoVP::setAudioDevice);
     audioMenu->addMenu(audioDevicesMenu);

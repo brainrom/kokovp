@@ -4,6 +4,19 @@ project(KokoVP)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
+    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+    message(STATUS "CMAKE_BUILD_TYPE is not Debug, setting QT_NO_DEBUG_OUTPUT.")
+    add_compile_definitions(QT_NO_DEBUG_OUTPUT)
+endif()
+
 find_package(QT NAMES Qt6)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets Network Xml)
 find_package(PkgConfig REQUIRED)
@@ -108,7 +121,7 @@ set(UI
 
 qt_wrap_ui(FORMS ${UI})
 qt_create_translation(QM_FILES ${TS_FILES} ${MAIN_SRC})
-qt_add_resources(QRC_CPP icons/res.qrc)
+qt_add_resources(QRC_CPP icons.qrc)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 

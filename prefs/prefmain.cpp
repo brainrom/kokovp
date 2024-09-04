@@ -31,9 +31,9 @@ PrefMain::PrefMain(QWidget *parent)
     ui->seek1->setLabel( tr("Medium jump") );
     ui->seek2->setLabel( tr("Long jump") );
 
-    ui->seek0->setIcon(QIcon(":/icons/default/forward10s"));
-    ui->seek1->setIcon(QIcon(":/icons/default/forward1m"));
-    ui->seek2->setIcon(QIcon(":/icons/default/forward10m"));
+    ui->seek0->setIcon(QIcon::fromTheme("forward10s"));
+    ui->seek1->setIcon(QIcon::fromTheme("forward1m"));
+    ui->seek2->setIcon(QIcon::fromTheme("forward10m"));
 }
 
 PrefMain::~PrefMain()

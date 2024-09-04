@@ -14,8 +14,7 @@
    <string>General</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icons/res.qrc">
-    <normaloff>:/icons/default/pref_general.png</normaloff>:/icons/default/pref_general.png</iconset>
+   <iconset theme="preferences-other"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <property name="spacing">
