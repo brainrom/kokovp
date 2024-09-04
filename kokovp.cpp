@@ -65,6 +65,8 @@ KokoVP::KokoVP(QWidget *parent)
     assert(!inst);
     inst = this;
 
+    QIcon::setFallbackThemeName("kokovp-default");
+
     playerWidget = new PlayerWidget(this);
     player = new PlayerController(playerWidget);
     pref = new PrefDialog();
@@ -416,6 +418,10 @@ void KokoVP::readConfig()
 
     player->setOption("alang", Config::i().get("tracks/alang").toStringList());
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
+
+    QString icon_theme = Config::i().get("misc/icon_theme", "").toString();
+    if (!icon_theme.isEmpty())
+        QIcon::setThemeName(icon_theme);
 }
 
 void KokoVP::insertActionsMap(QAction *action)
