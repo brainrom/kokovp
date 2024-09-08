@@ -44,201 +44,208 @@ AutohideWidget::AutohideWidget(QWidget * parent)
 	, timer(0)
     , animation(0)
 {
-	setBackgroundRole(QPalette::Window);
-	setAutoFillBackground(true);
-	setLayoutDirection(Qt::LeftToRight);
+    setBackgroundRole(QPalette::Window);
+    setAutoFillBackground(true);
+    setLayoutDirection(Qt::LeftToRight);
 
-	QWidget * widget_to_watch = parent;
-	widget_to_watch->installEventFilter(this);
-	installFilter(widget_to_watch);
+    parent->installEventFilter(this);
+    installFilter(parent);
 
-	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(checkUnderMouse()));
-	timer->setInterval(3000);
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &AutohideWidget::checkUnderMouse);
+    timer->setInterval(3000);
 
-	QVBoxLayout *layout = new QVBoxLayout;
-	layout->setSpacing(0);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setSpacing(0);
     layout->setContentsMargins(0,0,0,0);
-	setLayout(layout);
+    setLayout(layout);
 }
 
 AutohideWidget::~AutohideWidget() {
-	if (animation) delete animation;
+    if (animation) delete animation;
 }
 
-void AutohideWidget::setInternalWidget(QWidget * w) {
-	//qDebug() << "AutohideWidget::setInternalWidget:" << w;
-	layout()->addWidget(w);
-	internal_widget = w;
+void AutohideWidget::setInternalWidget(QWidget *w) {
+    //qDebug() << "AutohideWidget::setInternalWidget:" << w;
+    layout()->addWidget(w);
+    internal_widget = w;
 }
 
 void AutohideWidget::setHideDelay(int ms) {
-	timer->setInterval(ms);
+    timer->setInterval(ms);
 }
 
 int AutohideWidget::hideDelay() {
-	return timer->interval();
+    return timer->interval();
 }
 
 void AutohideWidget::installFilter(QObject *o) {
-	QObjectList children = o->children();
-	for (int n=0; n < children.count(); n++) {
-		if (children[n]->isWidgetType()) {
-			qDebug() << "AutohideWidget::installFilter: child name:" << children[n]->objectName();
-			QWidget *w = static_cast<QWidget *>(children[n]);
-			w->setMouseTracking(true);
-			w->installEventFilter(this);
-			installFilter(children[n]);
-			#ifdef HANDLE_TAP_EVENT
-			//w->grabGesture(Qt::TapGesture);
-			#endif
-		}
-	}
+    for (auto &children : o->children())
+    {
+        if (!children->isWidgetType())
+            continue;
+
+        qDebug() << "AutohideWidget::installFilter: child name:" << children->objectName();
+        QWidget *w = static_cast<QWidget*>(children);
+        w->setMouseTracking(true);
+        w->installEventFilter(this);
+        installFilter(children);
+        #ifdef HANDLE_TAP_EVENT
+        //w->grabGesture(Qt::TapGesture);
+        #endif
+    }
 }
 
 bool AutohideWidget::visiblePopups() {
-	//qDebug() << "AutohideWidget::visiblePopups: internal_widget:" << internal_widget;
-	if (!internal_widget) return false;
+    //qDebug() << "AutohideWidget::visiblePopups: internal_widget:" << internal_widget;
+    if (!internal_widget) return false;
 
-	// Check if any of the menus in the internal widget is visible
-	QObjectList children = internal_widget->children();
-	foreach(QObject * child, children) {
-		if (child->isWidgetType()) {
-			//qDebug() << "AutohideWidget::visiblePopups:" << child << "child name:" << child->objectName();
-			QWidget *w = static_cast<QWidget *>(child);
+    // Check if any of the menus in the internal widget is visible
+    for (auto &child : internal_widget->children())
+    {
+        if (!child->isWidgetType())
+            continue;
 
-			QList<QAction *> actions = w->actions();
-			foreach(QAction * action, actions) {
-				//qDebug() << "AutohideWidget::visiblePopups: action:" << action;
+        //qDebug() << "AutohideWidget::visiblePopups:" << child << "child name:" << child->objectName();
+        QWidget *w = static_cast<QWidget*>(child);
 
-				QList<QWidget *> aw = action->associatedWidgets();
-				//qDebug() << "AutohideWidget::visiblePopups: aw:" << aw;
+        for (auto &action : w->actions())
+        {
+            //qDebug() << "AutohideWidget::visiblePopups: action:" << action;
+            //qDebug() << "AutohideWidget::visiblePopups: aw:" << aw;
 
-				QMenu * menu = 0;
-				foreach(QWidget * widget, aw) {
-					//qDebug() << "AutohideWidget::visiblePopups: widget:" << widget;
-					if ((menu = qobject_cast<QMenu *>(widget))) {
-						//qDebug() << "AutohideWidget::visiblePopups: menu:" << menu << "visible:" << menu->isVisible();
-						if (menu->isVisible()) return true;
-					}
-				}
+            QMenu *menu = nullptr;
+            for (auto &widget : action->associatedObjects())
+            {
+                //qDebug() << "AutohideWidget::visiblePopups: widget:" << widget;
+                if ((menu = qobject_cast<QMenu*>(widget)))
+                {
+                        //qDebug() << "AutohideWidget::visiblePopups: menu:" << menu << "visible:" << menu->isVisible();
+                        if (menu->isVisible()) return true;
+                }
+            }
 
-				menu = action->menu();
-				if (menu) {
-					//qDebug() << "AutohideWidget::visiblePopups: menu:" << menu << "visible:" << menu->isVisible();
-					if (menu->isVisible()) return true;
-				}
-			}
-		}
-	}
-	return false;
+            menu = action->menu();
+            if (menu)
+            {
+                //qDebug() << "AutohideWidget::visiblePopups: menu:" << menu << "visible:" << menu->isVisible();
+                if (menu->isVisible()) return true;
+            }
+        }
+    }
+    return false;
 }
 
 void AutohideWidget::activate() {
-	turned_on = true;
-	timer->start();
+    turned_on = true;
+    timer->start();
 }
 
 void AutohideWidget::deactivate() {
-	turned_on = false;
-	timer->stop();
-	hide();
+    turned_on = false;
+    timer->stop();
+    hide();
 }
 
 void AutohideWidget::show() {
-	qDebug() << "AutohideWidget::show";
-	resizeAndMove();
+    qDebug() << "AutohideWidget::show";
+    resizeAndMove();
 
-	if (use_animation) {
-		showAnimated();
-	} else {
-		QWidget::show();
-	}
+    if (use_animation)
+        showAnimated();
+    else
+        QWidget::show();
 
-	// Restart timer
-	if (timer->isActive()) timer->start();
+    // Restart timer
+    if (timer->isActive()) timer->start();
 }
 
 void AutohideWidget::setAutoHide(bool b) {
-	auto_hide = b;
+    auto_hide = b;
 }
 
 void AutohideWidget::checkUnderMouse() {
-	if (auto_hide) {
-		//qDebug("AutohideWidget::checkUnderMouse");
-		if (isVisible() && !underMouse() && !visiblePopups()) {
-			hide();
-		}
-	}
+    if (!auto_hide)
+        return;
+
+    //qDebug("AutohideWidget::checkUnderMouse");
+    if (isVisible() && !underMouse() && !visiblePopups())
+            hide();
 }
 
 void AutohideWidget::resizeAndMove() {
-	QWidget * widget = parentWidget();
-	int w = widget->width() * perc_width / 100;
-	int h = height();
-	resize(w, h);
+    QWidget * widget = parentWidget();
+    int w = widget->width() * perc_width / 100;
+    int h = height();
+    resize(w, h);
 
-	int x = (widget->width() - width() ) / 2;
-	int y = widget->height() - height() - spacing;
-	move(x, y);
+    int x = (widget->width() - width() ) / 2;
+    int y = widget->height() - height() - spacing;
+    move(x, y);
 }
 
 bool AutohideWidget::eventFilter(QObject * obj, QEvent * event) {
-	if (turned_on) {
+    if (turned_on)
+    {
         //qDebug() << "AutohideWidget::eventFilter: obj:" << obj << "type:" << event->type();
-		#ifdef HANDLE_TAP_EVENT
-		if (event->type() == QEvent::Gesture) {
-			qDebug() << "AutohideWidget::eventFilter: obj:" << obj << "gesture:" << event;
-			QGestureEvent * gesture_event = static_cast<QGestureEvent*>(event);
-			if (gesture_event->gesture(Qt::TapGesture)) {
-				qDebug() << "AutohideWidget::eventFilter: tap event detected";
-				if (!isVisible()) show(); //else hide();
-				event->setAccepted(true);
-				return true;
-			} 
-		}
-		else
-		#endif
-		if (event->type() == QEvent::MouseMove) {
-			//qDebug() << "AutohideWidget::eventFilter: mouse move" << obj;
-			if (!isVisible()) {
-				if (activation_area == Anywhere) {
-					show();
-				} else {
-					QMouseEvent * mouse_event = dynamic_cast<QMouseEvent*>(event);
-					QWidget * parent = parentWidget();
-					QPoint p = parent->mapFromGlobal(mouse_event->globalPos());
-					//qDebug() << "AutohideWidget::eventFilter: y:" << p.y();
-					if (p.y() > (parent->height() - height() - spacing)) {
-						show();
-					}
-				}
-			}
-		}
-		else
-		if (event->type() == QEvent::MouseButtonRelease && obj == this) {
-			event->setAccepted(true);
-			return true;
-		}
-	}
+        #ifdef HANDLE_TAP_EVENT
+        if (event->type() == QEvent::Gesture) {
+                qDebug() << "AutohideWidget::eventFilter: obj:" << obj << "gesture:" << event;
+                QGestureEvent * gesture_event = static_cast<QGestureEvent*>(event);
+                if (gesture_event->gesture(Qt::TapGesture)) {
+                        qDebug() << "AutohideWidget::eventFilter: tap event detected";
+                        if (!isVisible()) show(); //else hide();
+                        event->setAccepted(true);
+                        return true;
+                }
+        }
+        else
+        #endif
+        if (event->type() == QEvent::MouseMove)
+        {
+            //qDebug() << "AutohideWidget::eventFilter: mouse move" << obj;
+            if (!isVisible())
+            {
+                if (activation_area == Anywhere) {
+                        show();
+                } else {
+                        QMouseEvent *mouse_event = dynamic_cast<QMouseEvent*>(event);
+                        QWidget * parent = parentWidget();
+                        QPoint p = parent->mapFromGlobal(mouse_event->globalPosition().toPoint());
+                        //qDebug() << "AutohideWidget::eventFilter: y:" << p.y();
+                        if (p.y() > (parent->height() - height() - spacing)) {
+                                show();
+                        }
+                }
+            }
+        }
+        else if (event->type() == QEvent::MouseButtonRelease && obj == this) {
+                event->setAccepted(true);
+                return true;
+        }
+        else if (event->type() == QEvent::Resize && isVisible()) // Resize and move widget when base widget is resized and internal widget is visible
+        {
+            show(); // Using show() instead of resizeAndMove() to restart animation, when using animation
+        }
+    }
 
-	return QWidget::eventFilter(obj, event);
+    return QWidget::eventFilter(obj, event);
 }
 
-void AutohideWidget::showAnimated() {
-    if (!animation) {
-		animation = new QPropertyAnimation(this, "pos");
-	}
+void AutohideWidget::showAnimated()
+{
+    if (!animation)
+        animation = new QPropertyAnimation(this, "pos");
 
-	QPoint initial_position = QPoint(pos().x(), parentWidget()->size().height());
-	QPoint final_position = pos();
-	move(initial_position);
+    QPoint initial_position = QPoint(pos().x(), parentWidget()->size().height());
+    QPoint final_position = pos();
+    move(initial_position);
 
-	QWidget::show();
+    QWidget::show();
 
-	animation->setDuration(300);
-	animation->setEasingCurve(QEasingCurve::OutBounce);
-	animation->setEndValue(final_position);
-	animation->setStartValue(initial_position);
-	animation->start();
+    animation->setDuration(300);
+    animation->setEasingCurve(QEasingCurve::OutBounce);
+    animation->setEndValue(final_position);
+    animation->setStartValue(initial_position);
+    animation->start();
 }
