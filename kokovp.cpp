@@ -44,6 +44,7 @@
 #include "helper.h"
 
 #include "prefs/prefdialog.h"
+#include "prefs/prefappearance.h"
 #include "persistency/filesettingshash.h"
 
 // TODO: maybe move to some class. Anyway it must be static
@@ -69,6 +70,8 @@ KokoVP::KokoVP(QWidget *parent)
     inst = this;
 
     QIcon::setFallbackThemeName("kokovp-default");
+
+    qDebug() << "Available themes: " << QStyleFactory::keys() << " Icon search paths: " << QIcon::themeSearchPaths() << " Fallback Icon search paths: " << QIcon::fallbackSearchPaths();
 
     playerWidget = new PlayerWidget(this);
     player = new PlayerController(playerWidget);
@@ -422,9 +425,14 @@ void KokoVP::readConfig()
     player->setOption("alang", Config::i().get("tracks/alang").toStringList());
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
 
-    QString icon_theme = Config::i().get("misc/icon_theme", "").toString();
-    if (!icon_theme.isEmpty())
-        QIcon::setThemeName(icon_theme);
+
+    QString uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
+    qDebug() << "UI theme " << uiTheme << "set in config, applying now.";
+    qApp->setStyle(uiTheme);
+
+    QString iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
+    qDebug() << "Icon theme " << iconTheme << "set in config, applying now.";
+    QIcon::setThemeName(iconTheme);
 }
 
 void KokoVP::insertActionsMap(QAction *action)
