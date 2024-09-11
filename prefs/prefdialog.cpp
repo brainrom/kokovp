@@ -17,6 +17,7 @@
 #include "prefdialog.h"
 #include <QDialogButtonBox>
 
+#include "prefappearance.h"
 #include "prefextfile.h"
 #include "prefinput.h"
 #include "prefmain.h"
@@ -73,6 +74,7 @@ PrefDialog::PrefDialog(QWidget * parent, Qt::WindowFlags f)
     addSection(new PrefInput(this));
     addSection(new PrefExtFile(this));
     addSection(new PrefScreenshots(this));
+    addSection(new PrefAppearance(this));
 }
 
 void PrefDialog::accept() {
