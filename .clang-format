@@ -4,5 +4,5 @@ IndentCaseBlocks: true
 IndentCaseLabels: true
 BreakBeforeBraces: Allman
 ColumnLimit: 0
-PointerAlignmentStyle: Right
+PointerAlignment: Right
 ReferenceAlignment: Pointer
