@@ -16,6 +16,7 @@
 */
 #include "mpvwidget.h"
 
+#include <QDebug>
 #include <QOpenGLContext>
 #include <QMetaObject>
 #include <QPainter>
@@ -26,7 +27,6 @@
 
 #include "mpv_qthelper.hpp"
 #include <stdexcept>
-#include "qdebug.h"
 
 MpvWidget::MpvWidget(QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
@@ -39,7 +39,11 @@ MpvWidget::MpvWidget(QWidget *parent, Qt::WindowFlags f)
         throw std::runtime_error("could not create mpv context");
 
     mpv_set_option_string(mpv, "terminal", "yes");
+#ifdef QT_DEBUG
     mpv_set_option_string(mpv, "msg-level", "all=v");
+#else
+    mpv_set_option_string(mpv, "msg-level", "all=error");
+#endif
     if (mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
 
