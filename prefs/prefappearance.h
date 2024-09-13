@@ -23,12 +23,6 @@ namespace Ui {
 class PrefAppearance;
 }
 
-extern const std::string uiThemeConfigKey;
-extern const std::string iconThemeConfigKey;
-
-extern const std::string uiThemeDefault;
-extern const std::string iconThemeDefault;
-
 class PrefAppearance : public PrefSection
 {
     Q_OBJECT
@@ -36,6 +30,9 @@ class PrefAppearance : public PrefSection
 public:
     explicit PrefAppearance(QWidget *parent = nullptr);
     ~PrefAppearance();
+    static const QByteArray uiThemeConfigKey;
+    static const QByteArray iconThemeConfigKey;
+    static const QByteArray themeDefaultValue;
     void load() override;
     void save() override;
 

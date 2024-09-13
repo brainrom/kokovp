@@ -423,17 +423,13 @@ void KokoVP::readConfig()
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
 
 
-    QString uiTheme = Config::i().get(uiThemeConfigKey, "").toString();
-    if (!uiTheme.isEmpty() && uiTheme.toStdString() != uiThemeDefault) {
-        qDebug() << "UI theme " << uiTheme << "set in config, applying now.";
-        qApp->setStyle(uiTheme);
-    }
+    QByteArray uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, PrefAppearance::themeDefaultValue).toByteArray();
+    qDebug() << "UI theme " << uiTheme << "set in config, applying now.";
+    qApp->setStyle(uiTheme);
 
-    QString iconTheme = Config::i().get(iconThemeConfigKey, "").toString();
-    if (!iconTheme.isEmpty() && iconTheme.toStdString() != iconThemeDefault) {
-        qDebug() << "Icon theme " << iconTheme << "set in config, applying now.";
-        QIcon::setThemeName(iconTheme);
-    }
+    QByteArray iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, PrefAppearance::themeDefaultValue).toByteArray();
+    qDebug() << "Icon theme " << iconTheme << "set in config, applying now.";
+    QIcon::setThemeName(iconTheme);
 }
 
 void KokoVP::insertActionsMap(QAction *action)

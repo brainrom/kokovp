@@ -22,11 +22,28 @@
 #include <QStyleFactory>
 #include <QString>
 
-const std::string uiThemeConfigKey = "appearance/ui_theme";
-const std::string iconThemeConfigKey = "appearance/icon_theme";
+namespace {
+    const QString themeDefaultDisplayName = QObject::tr("<System default>");
 
-const std::string uiThemeDefault = "<System default>";
-const std::string iconThemeDefault = "<System default>";
+    QString readAndConvert(const QByteArray &themeConfigKey) {
+        QByteArray val = Config::i().get(themeConfigKey, PrefAppearance::themeDefaultValue).toByteArray();
+        if (val.isEmpty())
+            return themeDefaultDisplayName;
+        else
+            return val;
+    }
+
+    void unconvertAndWrite(const QByteArray &themeConfigKey, const QString &themeName) {
+        if (themeDefaultDisplayName == themeName)
+            Config::i().set(themeConfigKey, themeName.toLatin1());
+        else
+            Config::i().set(themeConfigKey, PrefAppearance::themeDefaultValue);
+    }
+}
+
+const QByteArray PrefAppearance::uiThemeConfigKey = QByteArray("appearance/ui_theme");
+const QByteArray PrefAppearance::iconThemeConfigKey = QByteArray("appearance/icon_theme");
+const QByteArray PrefAppearance::themeDefaultValue = QByteArray();
 
 PrefAppearance::PrefAppearance(QWidget *parent)
     : PrefSection(parent)
@@ -34,10 +51,10 @@ PrefAppearance::PrefAppearance(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->cbUiTheme->addItem(tr(uiThemeDefault.c_str()));
+    ui->cbUiTheme->addItem(themeDefaultDisplayName);
     ui->cbUiTheme->addItems(QStyleFactory::keys());
 
-    ui->cbIconTheme->addItem(tr(iconThemeDefault.c_str()));
+    ui->cbIconTheme->addItem(themeDefaultDisplayName);
     for (auto path : QIcon::themeSearchPaths()) {
         QDir iconDir = QDir(path);
         if (!iconDir.exists())
@@ -54,12 +71,12 @@ PrefAppearance::~PrefAppearance()
 
 void PrefAppearance::load()
 {
-    ui->cbUiTheme->setCurrentText(Config::i().get(uiThemeConfigKey, tr(uiThemeDefault.c_str())).toString());
-    ui->cbIconTheme->setCurrentText(Config::i().get(iconThemeConfigKey, tr(iconThemeDefault.c_str())).toString());
+    ui->cbUiTheme->setCurrentText(readAndConvert(uiThemeConfigKey));
+    ui->cbIconTheme->setCurrentText(readAndConvert(iconThemeConfigKey));
 }
 
 void PrefAppearance::save()
 {
-    Config::i().set(uiThemeConfigKey, ui->cbUiTheme->currentText());
-    Config::i().set(iconThemeConfigKey, ui->cbIconTheme->currentText());
+    unconvertAndWrite(uiThemeConfigKey, ui->cbUiTheme->currentText());
+    unconvertAndWrite(iconThemeConfigKey, ui->cbIconTheme->currentText());
 }
