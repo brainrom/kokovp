@@ -30,9 +30,9 @@ class PrefAppearance : public PrefSection
 public:
     explicit PrefAppearance(QWidget *parent = nullptr);
     ~PrefAppearance();
-    static const QByteArray uiThemeConfigKey;
-    static const QByteArray iconThemeConfigKey;
-    static const QByteArray themeDefaultValue;
+    static const QString uiThemeConfigKey;
+    static const QString iconThemeConfigKey;
+    static const QString themeDefaultValue;
     void load() override;
     void save() override;
 

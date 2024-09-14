@@ -25,25 +25,25 @@
 namespace {
     const QString themeDefaultDisplayName = QObject::tr("<System default>");
 
-    QString readAndConvert(const QByteArray &themeConfigKey) {
-        QByteArray val = Config::i().get(themeConfigKey, PrefAppearance::themeDefaultValue).toByteArray();
+    QString readAndConvert(const QString &themeConfigKey) {
+        QString val = Config::i().get(themeConfigKey, PrefAppearance::themeDefaultValue).toString();
         if (val.isEmpty())
             return themeDefaultDisplayName;
         else
             return val;
     }
 
-    void unconvertAndWrite(const QByteArray &themeConfigKey, const QString &themeName) {
+    void unconvertAndWrite(const QString &themeConfigKey, const QString &themeName) {
         if (themeDefaultDisplayName == themeName)
-            Config::i().set(themeConfigKey, themeName.toLatin1());
-        else
             Config::i().set(themeConfigKey, PrefAppearance::themeDefaultValue);
+        else
+            Config::i().set(themeConfigKey, themeName);
     }
 }
 
-const QByteArray PrefAppearance::uiThemeConfigKey = QByteArray("appearance/ui_theme");
-const QByteArray PrefAppearance::iconThemeConfigKey = QByteArray("appearance/icon_theme");
-const QByteArray PrefAppearance::themeDefaultValue = QByteArray();
+const QString PrefAppearance::uiThemeConfigKey = QString("appearance/ui_theme");
+const QString PrefAppearance::iconThemeConfigKey = QString("appearance/icon_theme");
+const QString PrefAppearance::themeDefaultValue = QString();
 
 PrefAppearance::PrefAppearance(QWidget *parent)
     : PrefSection(parent)
@@ -51,10 +51,10 @@ PrefAppearance::PrefAppearance(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->cbUiTheme->addItem(themeDefaultDisplayName);
+    ui->cbUiTheme->addItem(themeDefaultDisplayName, themeDefaultValue);
     ui->cbUiTheme->addItems(QStyleFactory::keys());
 
-    ui->cbIconTheme->addItem(themeDefaultDisplayName);
+    ui->cbIconTheme->addItem(themeDefaultDisplayName, themeDefaultValue);
     for (auto path : QIcon::themeSearchPaths()) {
         QDir iconDir = QDir(path);
         if (!iconDir.exists())

@@ -423,11 +423,11 @@ void KokoVP::readConfig()
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
 
 
-    QByteArray uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, PrefAppearance::themeDefaultValue).toByteArray();
+    QString uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
     qDebug() << "UI theme " << uiTheme << "set in config, applying now.";
     qApp->setStyle(uiTheme);
 
-    QByteArray iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, PrefAppearance::themeDefaultValue).toByteArray();
+    QString iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
     qDebug() << "Icon theme " << iconTheme << "set in config, applying now.";
     QIcon::setThemeName(iconTheme);
 }
