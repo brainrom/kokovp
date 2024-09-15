@@ -121,11 +121,20 @@ void Helper::searchWithMaxDepth(QStringList &outList, const QStringList &filter,
 const QList<QUrl> Helper::pathsToUrls(const QStringList &paths)
 {
     QList<QUrl> ret;
-    for (auto &arg : paths)
+    for (const auto &arg : paths)
     {
-        QFileInfo f(arg);
-        if (f.exists())
-            ret.append(QUrl::fromLocalFile(f.absoluteFilePath()));
+        // FIXME: URLs with spaces don't work
+        QUrl url(arg);
+        //QUrl::isLocalFile() is not reliable if the file doesn't exist
+        if (url.isValid() && !url.isLocalFile() && !url.host().isEmpty())
+            ret.append(url);
+        else {
+            QFileInfo f(arg);
+            if (f.exists())
+                ret.append(QUrl(f.absoluteFilePath()));
+            else
+                qDebug() << "Path " << f.path() << "does not exist, skipping";;
+        }
     }
     return ret;
 }

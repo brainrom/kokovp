@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QCommandLineParser>
 
+#include "program_arg.h"
 #include "singleinstance.h"
 
 int main(int argc, char *argv[])
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("media", QCoreApplication::translate("KokoVP", "Media files to play"));
+    parser.addPositionalArgument("urls", QCoreApplication::translate("KokoVP", "URLs to play"));
 
     // A boolean option with a single name (-p)
     QCommandLineOption newInstanceOption(QStringList() << "n" << "new-instance", QCoreApplication::translate("KokoVP", "Force open in new instance"));
@@ -70,8 +72,8 @@ int main(int argc, char *argv[])
     KokoVP w;
     if (parser.positionalArguments().length()>0)
     {
-        w.handleNewMessage("open:" + parser.positionalArguments().join(','));
-        w.handleNewMessage("playlast");
+        w.handleNewMessage(ProgramArgument("open", parser.positionalArguments()));
+        w.handleNewMessage(ProgramArgument("playlast"));
     }
     QObject::connect(&inst, &SingleInstance::newMessage, &w, &KokoVP::handleNewMessage);
     w.showNormal();

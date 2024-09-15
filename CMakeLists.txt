@@ -39,6 +39,7 @@ qt_wrap_cpp(MOC_FILES
     mpvwidget.h
     playerwidget.h
     playercontroller.h
+    program_arg.h
     tracksmenu.h
     autohidewidget.h # From SMPlayer
     singleinstance.h
@@ -76,6 +77,7 @@ set(MAIN_SRC
     mpvwidget.cpp
     playerwidget.cpp
     playercontroller.cpp
+    program_arg.cpp
     tracksmenu.cpp
     autohidewidget.cpp # From SMPlayer
     config.cpp

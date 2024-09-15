@@ -43,6 +43,7 @@
 #include "config.h"
 #include "cache.h"
 #include "helper.h"
+#include "program_arg.h"
 
 #include "prefs/prefdialog.h"
 #include "prefs/prefappearance.h"
@@ -54,7 +55,8 @@ QString extfolderRewriteRule(const PlayerController::Track &t)
     if (!t.isExternal)
         return QString();
 
-    QFileInfo fI(t.filename);
+    QFileInfo fI(t.mediaUrl);
+    QString fName = fI.fileName();
 
     if (fI.fileName()==t.title)
         return QApplication::translate("KokoVP", "[EXT] ")+fI.dir().dirName();
@@ -82,8 +84,8 @@ KokoVP::KokoVP(QWidget *parent)
     createPlaylistDock();
 
     connect(player, &PlayerController::tracksUpdated, this, &KokoVP::handleTracks);
-    connect(player, &PlayerController::fileMetaUpdated, playlist, &Playlist::setCurrentRowMetainfo);
-    connect(player, &PlayerController::endFile, this, &KokoVP::handleEOF);
+    connect(player, &PlayerController::mediaMetaUpdated, playlist, &Playlist::setCurrentRowMetainfo);
+    connect(player, &PlayerController::endMediaRessource, this, &KokoVP::handleEOF);
     connect(playerWidget, &PlayerWidget::draggedURLS, playlist, &Playlist::addURLs);
     connect(playlist, &Playlist::playRequest, this, qOverload<QUrl>(&KokoVP::playFile));
 
@@ -159,18 +161,15 @@ KokoVP::KokoVP(QWidget *parent)
 
 KokoVP::~KokoVP()
 {
-    fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
+    fileSettings->saveSettingsFor(player->lastOpenMediaUrl(), true); // Always save time-pos on exit
 }
 
-void KokoVP::handleNewMessage(QString msg)
+void KokoVP::handleNewMessage(const ProgramArgument &msg)
 {
-    int del = msg.indexOf(':');
-    QString cmd = msg.left(del);
-    QStringList args = msg.trimmed().mid(del+1).split(',');
-    if (cmd=="open")
-        playlist->addURLs(Helper::pathsToUrls(args));
-    else if (cmd=="playlast")
-        QTimer::singleShot(100, playlist, &Playlist::playLast); // Workaroun to wait until Qt event loop and libmpv will be ready
+    if (msg.cmd=="open")
+        playlist->addURLs(Helper::pathsToUrls(msg.args));
+    else if (msg.cmd=="playlast")
+        QTimer::singleShot(100, playlist, &Playlist::playLast); // Workaround to wait until Qt event loop and libmpv will be ready
 }
 
 void KokoVP::toggleFullscreen(bool on)
@@ -499,7 +498,7 @@ void KokoVP::handleTracks()
     }
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool());
+        fileSettings->loadSettingsFor(player->currentMediaUrl(), Config::i().get("play_mode/keep_timepos", true).toBool());
 
     player->setProp("pause", false);
 }
@@ -509,7 +508,7 @@ void KokoVP::handleEOF(bool wasStopped)
     setWindowTitle("KokoVP");
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->saveSettingsFor(player->lastOpenFile(), wasStopped); // If file is ended, then time-pos shouldn't be saved
+        fileSettings->saveSettingsFor(player->lastOpenMediaUrl(), wasStopped); // If file is ended, then time-pos shouldn't be saved
 
     // It's better to reset tracks to auto on EOF instead of load event, to ensure, that tracks' ids events will be generated in time
     if (wasStopped || !Config::i().get("play_mode/keep_tracknums_for_next", false).toBool())
@@ -579,7 +578,7 @@ void KokoVP::setAudioDevice(QAction *audioDeviceAction)
 
 void KokoVP::tryPlayCurrent()
 {
-    if (player->currentFile().isEmpty())
+    if (player->currentMediaUrl().isEmpty())
         playlist->playCurrent();
 }
 

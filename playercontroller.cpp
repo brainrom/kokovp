@@ -26,9 +26,9 @@ PlayerController::PlayerController(PlayerWidget *parent)
     prop("volume")->set(50);
     prop("pause")->set(true);
     p->setProp("audio-file-auto-exts", Extensions.audio());
-    connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleFileLoad);
-    connect(p, &PlayerWidget::endFile, this, &PlayerController::endFile);
-    connect(p, &PlayerWidget::endFile, this, &PlayerController::handleFileEnd);
+    connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleMediaLoad);
+    connect(p, &PlayerWidget::endFile, this, &PlayerController::endMediaRessource);
+    connect(p, &PlayerWidget::endFile, this, &PlayerController::handleMediaEnd);
 }
 
 PropertyObserver *PlayerController::prop(QString name)
@@ -51,31 +51,31 @@ void PlayerController::setOption(const QString &name, const QVariant &value)
     p->setOption(name, value);
 }
 
-void PlayerController::handleFileEnd()
+void PlayerController::handleMediaEnd()
 {
-    haveFile = false;
-    if (!queuedFile.isEmpty())
+    haveMediaUrl = false;
+    if (!queuedMediaUrl.isEmpty())
     {
-        QUrl f = queuedFile;
-        queuedFile = QUrl();
-        open(f);
+        QUrl url = queuedMediaUrl;
+        queuedMediaUrl = QUrl();
+        open(url);
     }
 }
 
-void PlayerController::open(const QUrl &file)
+void PlayerController::open(const QUrl &url)
 {
-    if (haveFile)
+    if (haveMediaUrl)
     {
-        queuedFile = file;
+        queuedMediaUrl = url;
         return stop();
     }
     p_tracks.clear();
 
     // Here we need to scan siblings folder for possible external subtitles and audio
     //, then set it to sub-file-paths and audio-file-paths OPTIONs (not properties)
-    if (file.isLocalFile())
+    if (url.isLocalFile())
     {
-        QDir mediaDir = QFileInfo(file.toLocalFile()).absoluteDir();
+        QDir mediaDir = QFileInfo(url.toLocalFile()).absoluteDir();
 
         if (p_extSubMaxDepth>=0 && p_extSubMode!="no")
         {
@@ -94,7 +94,7 @@ void PlayerController::open(const QUrl &file)
         }
     }
 
-    p->command(QStringList{"loadfile", file.path()});
+    p->command(QStringList{"loadfile", url.toString()});
 }
 
 void PlayerController::stop()
@@ -164,10 +164,10 @@ bool PlayerController::isPlaying()
     return !getProp("pause").toBool();
 }
 
-void PlayerController::handleFileLoad()
+void PlayerController::handleMediaLoad()
 {
-    lastFile = currentFile();
-    haveFile = true;
+    lastMediaUrl = currentMediaUrl();
+    haveMediaUrl = true;
     bool ok;
     int tracksCount = getProp("track-list/count").toInt(&ok);
     assert(ok);
@@ -188,12 +188,12 @@ void PlayerController::handleFileLoad()
             t.type = Track::TRACK_TYPE_SUB;
 
         if (t.isExternal)
-            t.filename = p->getProp(trackAddr + "external-filename").toString();
+            t.mediaUrl = p->getProp(trackAddr + "external-mediaUrl").toString();
 
         p_tracks.append(t);
     }
     //p->command(QVariantList({"vf", "clr", ""})); //SVP
 
     emit tracksUpdated();
-    emit fileMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
+    emit mediaMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
 }
