@@ -433,6 +433,8 @@ void KokoVP::readConfig()
     QString iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
     qDebug() << "Icon theme " << iconTheme << "set in config, applying now.";
     QIcon::setThemeName(iconTheme);
+
+    this->repaint();
 }
 
 void KokoVP::insertActionsMap(QAction *action)

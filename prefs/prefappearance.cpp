@@ -15,39 +15,41 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "prefappearance.h"
-#include "ui_prefappearance.h"
 #include "config.h"
+#include "ui_prefappearance.h"
 
 #include <QDir>
-#include <QStyleFactory>
 #include <QString>
+#include <QStyleFactory>
 
-namespace {
-    const QString themeDefaultDisplayName = QObject::tr("<System default>");
+namespace
+{
+const QString themeDefaultDisplayName = QObject::tr("<System default>");
 
-    QString readAndConvert(const QString &themeConfigKey) {
-        QString val = Config::i().get(themeConfigKey, PrefAppearance::themeDefaultValue).toString();
-        if (val.isEmpty())
-            return themeDefaultDisplayName;
-        else
-            return val;
-    }
-
-    void unconvertAndWrite(const QString &themeConfigKey, const QString &themeName) {
-        if (themeDefaultDisplayName == themeName)
-            Config::i().set(themeConfigKey, PrefAppearance::themeDefaultValue);
-        else
-            Config::i().set(themeConfigKey, themeName);
-    }
+QString readAndConvert(const QString &themeConfigKey)
+{
+    QString val = Config::i().get(themeConfigKey, PrefAppearance::themeDefaultValue).toString();
+    if (val.isEmpty())
+        return themeDefaultDisplayName;
+    else
+        return val;
 }
+
+void unconvertAndWrite(const QString &themeConfigKey, const QString &themeName)
+{
+    if (themeDefaultDisplayName == themeName)
+        Config::i().set(themeConfigKey, PrefAppearance::themeDefaultValue);
+    else
+        Config::i().set(themeConfigKey, themeName);
+}
+} // namespace
 
 const QString PrefAppearance::uiThemeConfigKey = QString("appearance/ui_theme");
 const QString PrefAppearance::iconThemeConfigKey = QString("appearance/icon_theme");
 const QString PrefAppearance::themeDefaultValue = QString();
 
 PrefAppearance::PrefAppearance(QWidget *parent)
-    : PrefSection(parent)
-    , ui(new Ui::PrefAppearance)
+    : PrefSection(parent), ui(new Ui::PrefAppearance)
 {
     ui->setupUi(this);
 
@@ -55,12 +57,14 @@ PrefAppearance::PrefAppearance(QWidget *parent)
     ui->cbUiTheme->addItems(QStyleFactory::keys());
 
     ui->cbIconTheme->addItem(themeDefaultDisplayName, themeDefaultValue);
-    for (auto path : QIcon::themeSearchPaths()) {
+    for (auto path : QIcon::themeSearchPaths())
+    {
         QDir iconDir = QDir(path);
         if (!iconDir.exists())
             continue;
         QStringList iconThemes = iconDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::NoSort);
-        std::for_each(iconThemes.begin(), iconThemes.end(), [&](const QString &theme) {ui->cbIconTheme->addItem(theme);});
+        std::for_each(iconThemes.begin(), iconThemes.end(), [&](const QString &theme)
+                      { ui->cbIconTheme->addItem(theme); });
     }
 }
 

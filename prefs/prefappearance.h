@@ -19,7 +19,8 @@
 
 #include "prefsection.h"
 
-namespace Ui {
+namespace Ui
+{
 class PrefAppearance;
 }
 
@@ -27,7 +28,7 @@ class PrefAppearance : public PrefSection
 {
     Q_OBJECT
 
-public:
+  public:
     explicit PrefAppearance(QWidget *parent = nullptr);
     ~PrefAppearance();
     static const QString uiThemeConfigKey;
@@ -36,7 +37,7 @@ public:
     void load() override;
     void save() override;
 
-private:
+  private:
     Ui::PrefAppearance *ui;
 };
 

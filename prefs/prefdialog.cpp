@@ -78,6 +78,7 @@ PrefDialog::PrefDialog(QWidget * parent, Qt::WindowFlags f)
 }
 
 void PrefDialog::accept() {
+    qDebug() << "The preferences were accepted.";
     apply();
     hide();
     setResult(QDialog::Accepted);
@@ -86,7 +87,7 @@ void PrefDialog::accept() {
 }
 
 void PrefDialog::apply() {
-    emit accepted();
+    qDebug() << "The preferences were applied.";
     for (auto &section : sectionsList)
         section->save();
 
@@ -95,6 +96,7 @@ void PrefDialog::apply() {
 }
 
 void PrefDialog::reject() {
+    qDebug() << "The preferences were rejected.";
     hide();
     for (auto &section : sectionsList)
         section->load();
