@@ -284,7 +284,7 @@ void KokoVP::populateMenu()
     BistableAction *muteAct = new BistableAction(Qt::Key_M, audioMenu, "mute");
     muteAct->setCheckable(true);
     muteAct->setPassiveState(tr("Mute"), QIcon::fromTheme("audio-volume-high"));
-    muteAct->setActiveState(tr("Mute"), QIcon::fromTheme("audio-volume-muted"));
+    muteAct->setActiveState(tr("Unmute"), QIcon::fromTheme("audio-volume-muted"));
     connect(player->prop("mute"), &PropertyObserver::changedBool, muteAct, &BistableAction::switchState);
     connect(muteAct, &QAction::toggled, player->prop("mute"), &PropertyObserver::set);
 
