@@ -166,9 +166,9 @@ KokoVP::~KokoVP()
 
 void KokoVP::handleNewMessage(const ProgramArgument &msg)
 {
-    if (msg.cmd=="open")
+    if (msg.cmd==ProgramCmd::OPEN)
         playlist->addURLs(Helper::pathsToUrls(msg.args));
-    else if (msg.cmd=="playlast")
+    else if (msg.cmd==ProgramCmd::PLAYLAST)
         QTimer::singleShot(100, playlist, &Playlist::playLast); // Workaround to wait until Qt event loop and libmpv will be ready
 }
 

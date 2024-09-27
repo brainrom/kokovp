@@ -6,11 +6,18 @@
 
 class QDataStream;
 
+enum class ProgramCmd
+{
+    NONE,
+    OPEN,
+    PLAYLAST,
+};
+
 struct ProgramArgument
 {
-    ProgramArgument(const QString &cmd = QString(), const QStringList &args = QStringList());
+    explicit ProgramArgument(const ProgramCmd &cmd = ProgramCmd::NONE, const QStringList &args = QStringList());
 
-    QString cmd; // TODO: Make cmd enum
+    ProgramCmd cmd;
     QStringList args;
 
     friend QDataStream &operator>>(QDataStream &istream, ProgramArgument &pa);

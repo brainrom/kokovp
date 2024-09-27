@@ -2,7 +2,7 @@
 
 #include "program_arg.h"
 
-ProgramArgument::ProgramArgument(const QString &cmd, const QStringList &args)
+ProgramArgument::ProgramArgument(const ProgramCmd &cmd, const QStringList &args)
     : cmd{cmd}, args{args}
 {
 }
