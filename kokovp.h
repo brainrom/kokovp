@@ -27,6 +27,7 @@ class Playlist;
 class TracksMenu;
 class AutohideWidget;
 class FileSettingsHash;
+struct ProgramArgument;
 class QTableView;
 
 using QActionMap = QMap<QString, QAction*>;
@@ -40,7 +41,7 @@ public:
     ~KokoVP();
     static KokoVP *i() { return inst; }
     QActionMap actionsMap() const { return p_actionsMap; }
-    void handleNewMessage(QString msg);
+    void handleNewMessage(const ProgramArgument &msg);
 private:
     void toggleFullscreen(bool on);
 
