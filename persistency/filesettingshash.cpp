@@ -45,13 +45,14 @@ QString FileSettingsHash::configFile(const QString & filename) {
     return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
 }
 
-void FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
+bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
     QString config_file = configFile(filename);
     if (!QFile::exists(config_file))
-        return;
+        return false;
 
-	if ((!config_file.isEmpty()) && (QFile::exists(config_file))) {
-		QSettings settings(config_file, QSettings::IniFormat);
+    if ((!config_file.isEmpty()) && (QFile::exists(config_file)))
+    {
+        QSettings settings(config_file, QSettings::IniFormat);
 
         settings.beginGroup("props");
         for (auto &p : persistentProps)
@@ -59,22 +60,24 @@ void FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
 
         if (loadTimepos)
             p_player->seekAbsolute(settings.value("time-pos").toDouble());
-		settings.endGroup();
-	}
+        settings.endGroup();
+        return true;
+    }
+    return false;
 }
 
-void FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
+bool FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
     QString config_file = configFile(filename);
     QString output_dir = QFileInfo(config_file).absolutePath();
 
     if (config_file.isEmpty())
-        return;
+        return false;
 
     QDir d(base_dir);
     if (!d.exists(output_dir)) {
         if (!d.mkpath(output_dir)) {
             qWarning() << "FileSettingsHash::saveSettingsFor: can't create directory" << QString(base_dir + "/" + output_dir);
-            return;
+            return false;
         }
     }
 
@@ -86,6 +89,7 @@ void FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
     settings.setValue("time-pos", saveTimepos ? currentProps.value("time-pos") : QVariant(0));
     settings.endGroup();
     settings.sync();
+    return true;
 }
 
 void FileSettingsHash::updateCurrentProps(QVariant value)

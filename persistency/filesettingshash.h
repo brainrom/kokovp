@@ -32,15 +32,15 @@ class FileSettingsHash : public QObject
     Q_OBJECT
 public:
     FileSettingsHash(QString directory, PlayerController *player, QObject *parent = nullptr);
-    void loadSettingsFor(QString filename, bool loadTimepos = true);
-    void saveSettingsFor(QString filename, bool saveTimepos = true);
+    bool loadSettingsFor(QString filename, bool loadTimepos = true);
+    bool saveSettingsFor(QString filename, bool saveTimepos = true);
 private:
     void updateCurrentProps(QVariant value);
     QString configFile(const QString & filename);
 
     PlayerController *p_player;
 
-	QString base_dir;
+    QString base_dir;
     QString currentFile;
     QStringList persistentProps;
     QVariantMap currentProps;
