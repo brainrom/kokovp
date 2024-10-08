@@ -19,7 +19,11 @@
 #include "playerwidget.h"
 #include "playlist/playlist.h"
 
-#include <QtWidgets>
+#include <QApplication>
+#include <QMenuBar>
+#include <QActionEvent>
+#include <QActionGroup>
+#include <QInputDialog>
 #include <QToolBar>
 #include <QStandardPaths>
 
