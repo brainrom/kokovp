@@ -28,6 +28,7 @@ class TracksMenu : public QMenu
     Q_OBJECT
 public:
     typedef QString (*RewriteRuleFunc)(const PlayerController::Track &t);
+    static QString defRule(const PlayerController::Track &t);
 
     TracksMenu(const QString &title, QWidget *parent = nullptr);
     void clear();
@@ -37,7 +38,6 @@ public:
 signals:
     void trackSwitched(int id);
 private:
-    static QString defRule(const PlayerController::Track &t);
     RewriteRuleFunc rRule;
     QActionGroup *trackAG;
     void handleAction(QAction *a);
