@@ -270,11 +270,6 @@ void PropertyObserver::set(QVariant value)
         p_mpv->setProp(p_name, value);
 }
 
-void PropertyObserver::setDefVal(QVariant value)
-{
-    defVal = value;
-}
-
 void PropertyObserver::setRelative(double relValue)
 {
     bool isOk;

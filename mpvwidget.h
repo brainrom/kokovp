@@ -34,9 +34,9 @@ public:
     QString name() { return p_name; }
     QVariant get();
     void set(QVariant value);
-    void setDefVal(QVariant value);
-    void setRelative(double relValue);
+    void setDefVal(QVariant value) { defVal = value; }
     void reset() { set(defVal); }
+    void setRelative(double relValue);
 signals:
     void changed(QVariant value);
     void changedString(QString value);
