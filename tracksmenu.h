@@ -31,18 +31,18 @@ public:
     static QString defRule(const PlayerController::Track &t);
 
     TracksMenu(const QString &title, QWidget *parent = nullptr);
-    void clear();
+    void clearTracks();
     void addTrack(const PlayerController::Track &t);
     void setCurrentId(int id);
     void setRewriteRule(RewriteRuleFunc f) { rRule = f; }
 signals:
     void trackSwitched(int id);
 private:
+    QAction* noAction;
     RewriteRuleFunc rRule;
     QActionGroup *trackAG;
     void handleAction(QAction *a);
-    void addNoTrack();
-    int lastId;
+    int lastId = -1;
 };
 
 #endif // TRACKSMENU_H

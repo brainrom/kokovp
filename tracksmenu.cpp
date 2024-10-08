@@ -21,17 +21,28 @@ TracksMenu::TracksMenu(const QString &title, QWidget *parent) : QMenu{title, par
     trackAG = new QActionGroup(this);
     trackAG->setExclusive(true);
     connect(trackAG, &QActionGroup::triggered, this, &TracksMenu::handleAction);
-    addNoTrack();
+
+    noAction = new QAction(tr("No"));
+    noAction->setData(-1);
+    noAction->setCheckable(true);
+    noAction->setChecked(true);
+
+    trackAG->addAction(noAction);
+    addAction(noAction);
+
     setCurrentId(-1);
     rRule = defRule;
 }
 
-void TracksMenu::clear()
+void TracksMenu::clearTracks()
 {
     QList<QAction*> acts = trackAG->actions();
     for (auto &a: acts)
+    {
+        if (a==noAction)
+            continue;
         delete a;
-    addNoTrack();
+    }
     setCurrentId(-1);
 }
 
@@ -48,23 +59,11 @@ void TracksMenu::addTrack(const PlayerController::Track &t)
 
 void TracksMenu::setCurrentId(int id)
 {
-    lastId = id;
     for (auto &a : trackAG->actions())
     {
         if (a->data()==id)
             a->trigger();
     }
-}
-
-QString TracksMenu::defRule(const PlayerController::Track &t)
-{
-    if (!t.title.isEmpty())
-        return t.title;
-
-    if (!t.lang.isEmpty())
-        return t.lang;
-
-    return QString::number(t.id);
 }
 
 void TracksMenu::handleAction(QAction *a)
@@ -77,13 +76,13 @@ void TracksMenu::handleAction(QAction *a)
     }
 }
 
-void TracksMenu::addNoTrack()
+QString TracksMenu::defRule(const PlayerController::Track &t)
 {
-    QAction *trackAction = new QAction(tr("No"));
-    trackAction->setData(-1);
-    trackAction->setCheckable(true);
-    trackAction->setChecked(true);
+    if (!t.title.isEmpty())
+        return t.title;
 
-    trackAG->addAction(trackAction);
-    addAction(trackAction);
+    if (!t.lang.isEmpty())
+        return t.lang;
+
+    return QString::number(t.id);
 }
