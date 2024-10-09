@@ -49,7 +49,9 @@ void TracksMenu::clearTracks()
 void TracksMenu::addTrack(const PlayerController::Track &t)
 {
     QString rRule_res = rRule(t);
-    QAction *trackAction = new QAction(rRule_res.isNull() ?  defRule(t) : rRule_res);
+    QAction *trackAction = new QAction();
+    // & is used for mnemonics in QAction, replace to display actual ampersand
+    trackAction->setText((rRule_res.isNull() ?  defRule(t) : rRule_res).replace("&", "&&"));
     trackAction->setData(t.id);
     trackAction->setCheckable(true);
 
