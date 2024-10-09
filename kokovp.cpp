@@ -111,7 +111,7 @@ KokoVP::KokoVP(QWidget *parent)
     populateMenu();
 
     // Widget actions
-    autoHide = new AutohideWidget(playerWidget);
+    autoHide = new AutohideWidget(playerWidget, this);
     autoHide->setAnimated(true);
     autoHide->setAutoHide(true);
 

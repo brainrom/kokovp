@@ -32,11 +32,12 @@ class AutohideWidget : public QWidget
 public:
     enum Activation { Anywhere = 1, Bottom = 2 };
 
-    AutohideWidget(QWidget * parent = 0);
+    AutohideWidget(QWidget *host, QWidget *parent);
+    AutohideWidget(QWidget *parent) : AutohideWidget{parent, parent} { }
     ~AutohideWidget();
 
-    void setInternalWidget(QWidget * w);
-    QWidget * internalWidget() { return internal_widget; };
+    void setInternalWidget(QWidget *w);
+    QWidget *internalWidget() { return internal_widget; }
 
     void show();
     void activate();
@@ -71,9 +72,10 @@ private:
     int spacing;
     int perc_width;
     Activation activation_area;
-    QWidget * internal_widget;
-    QTimer * timer;
-    QPropertyAnimation * animation;
+    QWidget *internal_widget;
+    QWidget *host_widget;
+    QTimer *timer;
+    QPropertyAnimation *animation;
 };
 
 #endif

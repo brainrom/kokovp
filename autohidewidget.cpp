@@ -32,8 +32,9 @@
 
 #include <QGestureEvent>
 
-AutohideWidget::AutohideWidget(QWidget * parent)
-	: QWidget(parent)
+AutohideWidget::AutohideWidget(QWidget *host, QWidget *parent)
+        : QWidget(parent)
+        , host_widget(host)
 	, turned_on(false)
 	, auto_hide(false)
 	, use_animation(false)
@@ -48,8 +49,8 @@ AutohideWidget::AutohideWidget(QWidget * parent)
     setAutoFillBackground(true);
     setLayoutDirection(Qt::LeftToRight);
 
-    parent->installEventFilter(this);
-    installFilter(parent);
+    host_widget->installEventFilter(this);
+    installFilter(host_widget);
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &AutohideWidget::checkUnderMouse);
@@ -174,13 +175,12 @@ void AutohideWidget::checkUnderMouse() {
 }
 
 void AutohideWidget::resizeAndMove() {
-    QWidget * widget = parentWidget();
-    int w = widget->width() * perc_width / 100;
+    int w = host_widget->width() * perc_width / 100;
     int h = height();
     resize(w, h);
 
-    int x = (widget->width() - width() ) / 2;
-    int y = widget->height() - height() - spacing;
+    int x = (host_widget->width() - width() ) / 2;
+    int y = host_widget->height() - height() - spacing;
     move(x, y);
 }
 
@@ -210,10 +210,9 @@ bool AutohideWidget::eventFilter(QObject * obj, QEvent * event) {
                         show();
                 } else {
                         QMouseEvent *mouse_event = dynamic_cast<QMouseEvent*>(event);
-                        QWidget * parent = parentWidget();
-                        QPoint p = parent->mapFromGlobal(mouse_event->globalPosition().toPoint());
+                        QPoint p = host_widget->mapFromGlobal(mouse_event->globalPosition().toPoint());
                         //qDebug() << "AutohideWidget::eventFilter: y:" << p.y();
-                        if (p.y() > (parent->height() - height() - spacing)) {
+                        if (p.y() > (host_widget->height() - height() - spacing)) {
                                 show();
                         }
                 }
@@ -237,7 +236,7 @@ void AutohideWidget::showAnimated()
     if (!animation)
         animation = new QPropertyAnimation(this, "pos");
 
-    QPoint initial_position = QPoint(pos().x(), parentWidget()->size().height());
+    QPoint initial_position = QPoint(pos().x(), host_widget->size().height());
     QPoint final_position = pos();
     move(initial_position);
 
