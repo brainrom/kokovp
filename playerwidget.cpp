@@ -152,3 +152,10 @@ void PlayerWidget::mouseMoveEvent(QMouseEvent *event)
     mouseMoveTimer->start();
     setCursor(Qt::ArrowCursor);
 }
+
+void PlayerWidget::enterEvent(QEnterEvent *event)
+{
+    mouseMoveTimer->start();
+    setCursor(Qt::ArrowCursor);
+    qDebug() << "enter";
+}
