@@ -30,7 +30,6 @@ TracksMenu::TracksMenu(const QString &title, QWidget *parent) : QMenu{title, par
     trackAG->addAction(noAction);
     addAction(noAction);
 
-    setCurrentId(-1);
     rRule = defRule;
 }
 
@@ -43,7 +42,9 @@ void TracksMenu::clearTracks()
             continue;
         delete a;
     }
-    setCurrentId(-1);
+    trackAG->blockSignals(true);
+    noAction->trigger();
+    trackAG->blockSignals(false);
 }
 
 void TracksMenu::addTrack(const PlayerController::Track &t)
@@ -57,14 +58,17 @@ void TracksMenu::addTrack(const PlayerController::Track &t)
 
     trackAG->addAction(trackAction);
     addAction(trackAction);
+    if (t.id==lastId)
+        trackAction->trigger();
 }
 
 void TracksMenu::setCurrentId(int id)
 {
+    lastId = id;
     for (auto &a : trackAG->actions())
     {
-        if (a->data()==id)
-            a->trigger();
+        if (a->data().toInt()==id)
+            return a->trigger();
     }
 }
 
@@ -74,6 +78,7 @@ void TracksMenu::handleAction(QAction *a)
     if (newId!=lastId)
     {
         lastId=newId;
+        qDebug() << "trackSwitched" << newId;
         emit trackSwitched(newId);
     }
 }
