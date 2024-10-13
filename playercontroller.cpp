@@ -193,12 +193,7 @@ void PlayerController::handleFileLoad()
         p_tracks.append(t);
     }
     //p->command(QVariantList({"vf", "clr", ""})); //SVP
-    prop("aid")->set("auto");
-    prop("vid")->set("auto");
-    prop("sid")->set("auto");
-    prop("secondary-sid")->set(-1);
 
-    p->setProp("pause", false); // Previous file can be paused, when new file is loaded, it's time to de-pause player
     emit tracksUpdated();
     emit fileMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
 }

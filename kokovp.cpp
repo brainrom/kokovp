@@ -461,12 +461,15 @@ void KokoVP::videoSubScreenshot()
 
 void KokoVP::handleTracks()
 {
-    videoTracksMenu->clear();
-    audioTracksMenu->clear();
-    subTracksMenu->clear();
-    secondSubTracksMenu->clear();
+    TracksMenu *tracksMenus[] = {videoTracksMenu, audioTracksMenu, subTracksMenu, secondSubTracksMenu};
+
+    for (auto &menu: tracksMenus)
+        menu->clearTracks();
 
     auto &tracks = player->tracks();
+
+    if (tracks.empty())
+        return;
 
     for (auto &t : tracks)
     {
@@ -483,15 +486,31 @@ void KokoVP::handleTracks()
             break;
         };
     }
+
     if (Config::i().get("play_mode/keep_props", true).toBool())
         fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool());
+
+    player->setProp("pause", false);
 }
 
 void KokoVP::handleEOF(bool wasStopped)
 {
     setWindowTitle("KokoVP");
-    fileSettings->saveSettingsFor(player->lastOpenFile(), wasStopped); // If file is ended, then time-pos shouldn't be saved
+
+    if (Config::i().get("play_mode/keep_props", true).toBool())
+        fileSettings->saveSettingsFor(player->lastOpenFile(), wasStopped); // If file is ended, then time-pos shouldn't be saved
+
+    // It's better to reset tracks to auto on EOF instead of load event, to ensure, that tracks' ids events will be generated in time
+    if (wasStopped || !Config::i().get("play_mode/keep_tracknums_for_next", false).toBool())
+    {
+        player->prop("aid")->set("auto");
+        player->prop("vid")->set("auto");
+        player->prop("sid")->set("auto");
+        player->prop("secondary-sid")->set(-1);
+    }
+
     player->prop("pause")->set(true);
+
     if (!wasStopped && Config::i().get("play_mode/next_on_eof", true).toBool())
         playlist->next();
 }
