@@ -95,5 +95,11 @@ bool FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
 void FileSettingsHash::updateCurrentProps(QVariant value)
 {
     PropertyObserver *p = static_cast<PropertyObserver*>(sender());
+    if (!value.isValid())
+    {
+        qWarning() << "returned " << p->name() << "value is invalid";
+        return;
+    }
+
     currentProps.insert(p->name(), value);
 }
