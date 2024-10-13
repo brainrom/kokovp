@@ -241,7 +241,8 @@ PropertyObserver::PropertyObserver(MpvWidget *mpv, QString name) : p_name{std::m
         { "chapter", MPV_FORMAT_INT64 },
         { "aid", MPV_FORMAT_INT64 },
         { "vid", MPV_FORMAT_INT64 },
-        { "sid", MPV_FORMAT_INT64 }
+        { "sid", MPV_FORMAT_INT64 },
+        { "secondary-sid", MPV_FORMAT_INT64 }
     };
 
     mpv_format f = MPV_FORMAT_NONE;
