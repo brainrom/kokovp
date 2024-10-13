@@ -44,6 +44,9 @@ signals:
     void changedInt(int value);
     void changedDouble(double value);
 private:
+    static const QVariant no;
+    static const QStringList tracksProps;
+
     void captureProperty(QString propName, QVariant data);
     QString p_name;
     QVariant defVal;

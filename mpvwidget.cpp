@@ -233,6 +233,9 @@ void MpvWidget::paintEvent(QPaintEvent *event)
     paintOverlay(painter);
 }
 
+const QVariant PropertyObserver::no = QString("no");
+const QStringList PropertyObserver::tracksProps = { "aid", "vid", "sid", "secondary-sid" };
+
 PropertyObserver::PropertyObserver(MpvWidget *mpv, QString name) : p_name{std::move(name)}, p_mpv(mpv)
 {
     static const QMap<QString, mpv_format> formats = {
@@ -269,9 +272,6 @@ QVariant PropertyObserver::get()
 
 void PropertyObserver::set(QVariant value)
 {
-    static const QVariant no = QString("no");
-    static const QStringList tracksProps = { "aid", "vid", "sid", "secondary-sid" };
-
     if (tracksProps.contains(p_name)) // Workaround to use -1 int track num as "no" string
         p_mpv->setProp(p_name, value.toInt()>=0 ? value : no);
     else
