@@ -70,7 +70,9 @@ void PlayerWidget::updateCursorVisibility()
 
 void PlayerWidget::setClickAction(QAction *newClickAction)
 {
-    disconnect(&doubleClickTimer, &QTimer::timeout, clickAct, &QAction::trigger);
+    if (clickAct)
+        disconnect(&doubleClickTimer, &QTimer::timeout, clickAct, &QAction::trigger);
+
     clickAct = newClickAction;
     connect(&doubleClickTimer, &QTimer::timeout, clickAct, &QAction::trigger);
 }
