@@ -28,6 +28,13 @@
 #include "mpv_qthelper.hpp"
 #include <stdexcept>
 
+QDebug operator<<(QDebug debug, const mpv::qt::ErrorReturn &message)
+{
+    QDebugStateSaver saver(debug);
+    debug.nospace() << message.error;
+    return debug;
+}
+
 MpvWidget::MpvWidget(QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 {
