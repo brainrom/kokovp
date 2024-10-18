@@ -56,6 +56,7 @@ qt_wrap_cpp(MOC_FILES
     actions/incdecactions.h
     actions/incdecwheelaction.h
 
+    prefs/prefappearance.h
     prefs/prefdialog.h
     prefs/prefsection.h
     prefs/prefmain.h
@@ -99,6 +100,7 @@ set(MAIN_SRC
     actions/incdecactions.cpp
     actions/incdecwheelaction.cpp
 
+    prefs/prefappearance.cpp
     prefs/prefdialog.cpp
     prefs/prefmain.cpp
     prefs/prefinput.cpp
@@ -113,6 +115,7 @@ set(MAIN_SRC
 )
 
 set(UI
+    prefs/prefappearance.ui
     prefs/prefmain.ui
     prefs/prefinput.ui
     prefs/prefscreenshots.ui
