@@ -159,5 +159,4 @@ void PlayerWidget::enterEvent(QEnterEvent *event)
 {
     mouseMoveTimer->start();
     setCursor(Qt::ArrowCursor);
-    qDebug() << "enter";
 }

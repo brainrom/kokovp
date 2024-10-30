@@ -304,6 +304,12 @@ void PropertyObserver::setRelative(double relValue)
 void PropertyObserver::captureProperty(QString propName, QVariant data)
 {
     assert(propName==p_name);
+    if (tracksProps.contains(propName))
+    {
+        qDebug() << "captured " << propName << " = " << data;
+        if (!data.isValid())
+            qDebug() << "captured invalid: " << get();
+    }
 
     bool isOk;
     switch (internalType)
