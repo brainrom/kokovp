@@ -22,49 +22,27 @@
 #include <QString>
 #include <QStyleFactory>
 
-namespace
-{
-const QString themeDefaultDisplayName = QObject::tr("<System default>");
-
-QString readAndConvert(const QString &themeConfigKey)
-{
-    QString val = Config::i().get(themeConfigKey, PrefAppearance::themeDefaultValue).toString();
-    if (val.isEmpty())
-        return themeDefaultDisplayName;
-    else
-        return val;
-}
-
-void unconvertAndWrite(const QString &themeConfigKey, const QString &themeName)
-{
-    if (themeDefaultDisplayName == themeName)
-        Config::i().set(themeConfigKey, PrefAppearance::themeDefaultValue);
-    else
-        Config::i().set(themeConfigKey, themeName);
-}
-} // namespace
-
 const QString PrefAppearance::uiThemeConfigKey = QString("appearance/ui_theme");
 const QString PrefAppearance::iconThemeConfigKey = QString("appearance/icon_theme");
-const QString PrefAppearance::themeDefaultValue = QString();
 
 PrefAppearance::PrefAppearance(QWidget *parent)
     : PrefSection(parent), ui(new Ui::PrefAppearance)
 {
     ui->setupUi(this);
 
-    ui->cbUiTheme->addItem(themeDefaultDisplayName, themeDefaultValue);
-    ui->cbUiTheme->addItems(QStyleFactory::keys());
+    ui->cbUiTheme->addItem(tr("<System default>"), QString());
+    for (auto &theme: QStyleFactory::keys())
+        ui->cbUiTheme->addItem(theme, theme);
 
-    ui->cbIconTheme->addItem(themeDefaultDisplayName, themeDefaultValue);
-    for (auto path : QIcon::themeSearchPaths())
+    ui->cbIconTheme->addItem(tr("<System default>"), QString());
+    for (auto &path : QIcon::themeSearchPaths())
     {
         QDir iconDir = QDir(path);
         if (!iconDir.exists())
             continue;
         QStringList iconThemes = iconDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::NoSort);
-        std::for_each(iconThemes.begin(), iconThemes.end(), [&](const QString &theme)
-                      { ui->cbIconTheme->addItem(theme); });
+        for (auto &theme : iconThemes)
+            ui->cbIconTheme->addItem(theme, theme);
     }
 }
 
@@ -75,12 +53,17 @@ PrefAppearance::~PrefAppearance()
 
 void PrefAppearance::load()
 {
-    ui->cbUiTheme->setCurrentText(readAndConvert(uiThemeConfigKey));
-    ui->cbIconTheme->setCurrentText(readAndConvert(iconThemeConfigKey));
+    int uiThemeNum = ui->cbUiTheme->findData(Config::i().get(uiThemeConfigKey));
+    if (uiThemeNum >= 0)
+        ui->cbUiTheme->setCurrentIndex(uiThemeNum);
+
+    int iconThemeNum = ui->cbIconTheme->findData(Config::i().get(iconThemeConfigKey));
+    if (iconThemeNum >= 0)
+        ui->cbIconTheme->setCurrentIndex(iconThemeNum);
 }
 
 void PrefAppearance::save()
 {
-    unconvertAndWrite(uiThemeConfigKey, ui->cbUiTheme->currentText());
-    unconvertAndWrite(iconThemeConfigKey, ui->cbIconTheme->currentText());
+    Config::i().set(uiThemeConfigKey, ui->cbUiTheme->currentData().toString());
+    Config::i().set(iconThemeConfigKey, ui->cbIconTheme->currentData().toString());
 }

@@ -26,6 +26,7 @@
 #include <QInputDialog>
 #include <QToolBar>
 #include <QStandardPaths>
+#include <QStyle>
 
 #include "autohidewidget.h"
 
@@ -70,8 +71,6 @@ KokoVP::KokoVP(QWidget *parent)
     inst = this;
 
     QIcon::setFallbackThemeName("kokovp-default");
-
-    qDebug() << "Available themes: " << QStyleFactory::keys() << " Icon search paths: " << QIcon::themeSearchPaths() << " Fallback Icon search paths: " << QIcon::fallbackSearchPaths();
 
     playerWidget = new PlayerWidget(this);
     player = new PlayerController(playerWidget);
@@ -426,13 +425,15 @@ void KokoVP::readConfig()
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
 
 
-    QString uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
+    static QString startUiTheme = qApp->style()->name(); // This executes only once at start
+    QString uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, QString()).toString();
     qDebug() << "UI theme " << uiTheme << "set in config, applying now.";
-    qApp->setStyle(uiTheme);
+    qApp->setStyle(uiTheme.isEmpty() ? startUiTheme : uiTheme);
 
-    QString iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, PrefAppearance::themeDefaultValue).toString();
+    static QString startIconTheme = QIcon::themeName(); // This executes only once at start
+    QString iconTheme = Config::i().get(PrefAppearance::iconThemeConfigKey, QString()).toString();
     qDebug() << "Icon theme " << iconTheme << "set in config, applying now.";
-    QIcon::setThemeName(iconTheme);
+    QIcon::setThemeName(iconTheme.isEmpty() ? startIconTheme : iconTheme);
 
     this->repaint();
 }
