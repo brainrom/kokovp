@@ -76,6 +76,9 @@ const QList<QUrl> Helper::openMediaDirectory(QWidget *parent)
 {
     QString dirPath = QFileDialog::getExistingDirectory(parent, QApplication::translate("Helper", "Choose a directory"),
                                                         Cache::i().get("file_open/last_file_dir", QStandardPaths::standardLocations(QStandardPaths::MoviesLocation)).toString());
+    if (dirPath.isEmpty())
+        return QList<QUrl>();
+
     QDir dir(dirPath);
 
     if (!dir.exists())
@@ -122,7 +125,7 @@ const QList<QUrl> Helper::pathsToUrls(const QStringList &paths)
     {
         QFileInfo f(arg);
         if (f.exists())
-            ret.append(QUrl(f.absoluteFilePath()));
+            ret.append(QUrl::fromLocalFile(f.absoluteFilePath()));
     }
     return ret;
 }
