@@ -60,6 +60,7 @@ private:
     void videoSubScreenshot();
     void openFiles();
     void openDirectory();
+    void openUrl();
     void playFile(QUrl file);
     void handleTracks();
     void handleEOF(bool wasStopped);

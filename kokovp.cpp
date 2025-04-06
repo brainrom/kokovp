@@ -220,8 +220,11 @@ void KokoVP::populateMenu()
     ActionWrapper *openDirectoryAct = new ActionWrapper(tr("Directory..."), QKeySequence(), openMenu, "openDirectory", QIcon::fromTheme("folder-open"));
     connect(openDirectoryAct, &QAction::triggered, this, qOverload<>(&KokoVP::openDirectory));
 
+    ActionWrapper *openUrlAct = new ActionWrapper(tr("URL"), QKeySequence(), openMenu, "openUrl", QIcon::fromTheme("gnumeric-link-url"));
+    connect(openUrlAct, &QAction::triggered, this, qOverload<>(&KokoVP::openUrl));
+
     ActionWrapper *exitAct = new ActionWrapper(tr("Exit"), QKeySequence("Ctrl+Q"), openMenu, "exit", QIcon::fromTheme("application-exit"));
-    connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
+    connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);   connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
 
     // --- Play ---
     BistableAction *playPauseAct = new BistableAction(Qt::Key_Space, playMenu, "play_pause");
@@ -457,6 +460,24 @@ void KokoVP::openDirectory()
     playlist->clear();
     playlist->addURLs(urls);
     playlist->playFirst();
+}
+
+void KokoVP::openUrl()
+{
+    auto dialog = QInputDialog(this);
+    dialog.setWindowTitle(tr("Open URL"));
+    dialog.setOkButtonText(tr("Open"));
+    dialog.setInputMode(QInputDialog::TextInput);
+    dialog.setTextValue("https://");
+    if (dialog.exec() == QDialog::Accepted) {
+        auto url = QUrl{dialog.textValue()};
+        if (url.isValid() && !url.host().isEmpty()) {
+            playlist->addURLs(QList{url});
+            playlist->playLast();
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Invalid URL"));
+        }
+    }
 }
 
 void KokoVP::videoScreenshot()
