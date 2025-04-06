@@ -17,6 +17,7 @@
 #include "singleinstance.h"
 
 #include <QDataStream>
+#include <QDebug>
 #include <QIODevice>
 #include <QLocalSocket>
 #include <QLocalServer>
