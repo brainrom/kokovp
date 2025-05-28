@@ -77,7 +77,6 @@ set(MAIN_SRC
     mpvwidget.cpp
     playerwidget.cpp
     playercontroller.cpp
-    program_arg.cpp
     tracksmenu.cpp
     autohidewidget.cpp # From SMPlayer
     config.cpp

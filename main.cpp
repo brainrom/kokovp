@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     {
         if (inst.connectServer())
         {
-            inst.sendMessage(ProgramArgument(ProgramCmd::OPEN, parser.positionalArguments()));
+            inst.sendMessage(QString(PROGRAM_ARG_OPEN) + parser.positionalArguments().join(','));
             inst.closeSocket();
             return 0;
         }
@@ -70,11 +70,10 @@ int main(int argc, char *argv[])
     }
 
     KokoVP w;
+
     if (parser.positionalArguments().length()>0)
-    {
-        w.handleNewMessage(ProgramArgument(ProgramCmd::OPEN, parser.positionalArguments()));
-        w.handleNewMessage(ProgramArgument(ProgramCmd::PLAYLAST));
-    }
+        w.handleNewMessage(QString(PROGRAM_ARG_OPEN) + parser.positionalArguments().join(','));
+
     QObject::connect(&inst, &SingleInstance::newMessage, &w, &KokoVP::handleNewMessage);
     w.showNormal();
 

@@ -55,12 +55,10 @@ bool SingleInstance::hostServer()
     return ret;
 }
 
-void SingleInstance::sendMessage(const ProgramArgument &msg)
+void SingleInstance::sendMessage(const QString &msg)
 {
-    QByteArray data;
-    QDataStream ostream(&data, QIODevice::WriteOnly);
-    ostream << msg;
-    p_socket->write(data);
+    p_socket->write(msg.toUtf8());
+    p_socket->putChar('\n');
     p_socket->waitForBytesWritten(100);
 }
 
@@ -77,12 +75,7 @@ void SingleInstance::handleNewConnection()
 void SingleInstance::readData()
 {
     QLocalSocket *sock = static_cast<QLocalSocket*>(sender());
-    QByteArray bytes = sock->readAll();
-    QDataStream istream(&bytes, QIODevice::ReadOnly);
+    while (sock->canReadLine())
+        emit newMessage(sock->readLine());
 
-    while (!istream.atEnd()) {
-        ProgramArgument msg;
-        istream >> msg;
-        emit newMessage(msg);
-    }
 }

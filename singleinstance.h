@@ -19,7 +19,6 @@
 
 #include <QObject>
 
-struct ProgramArgument;
 class QLocalSocket;
 class QLocalServer;
 
@@ -30,12 +29,12 @@ public:
     explicit SingleInstance(QString appName, QObject *parent = nullptr);
     bool connectServer();
     void closeSocket();
-    void sendMessage(const ProgramArgument &msg);
+    void sendMessage(const QString &msg);
 
     bool hostServer();
 signals:
-    void newMessage(const ProgramArgument &msg);
-    void handleNewMessage(const ProgramArgument &msg);
+    void newMessage(const QString &msg);
+    void handleNewMessage(const QString &msg);
 private:
     void handleNewConnection();
     void readData();

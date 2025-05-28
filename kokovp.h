@@ -41,7 +41,7 @@ public:
     ~KokoVP();
     static KokoVP *i() { return inst; }
     QActionMap actionsMap() const { return p_actionsMap; }
-    void handleNewMessage(const ProgramArgument &msg);
+    void handleNewMessage(const QString &msg);
 private:
     void toggleFullscreen(bool on);
 

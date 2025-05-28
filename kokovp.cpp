@@ -164,12 +164,13 @@ KokoVP::~KokoVP()
     fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
-void KokoVP::handleNewMessage(const ProgramArgument &msg)
+void KokoVP::handleNewMessage(const QString &msg)
 {
-    if (msg.cmd==ProgramCmd::OPEN)
-        playlist->addURLs(Helper::pathsToUrls(msg.args));
-    else if (msg.cmd==ProgramCmd::PLAYLAST)
-        QTimer::singleShot(100, playlist, &Playlist::playLast); // Workaround to wait until Qt event loop and libmpv will be ready
+    int del = msg.indexOf(PROGRAM_ARG_DELIMITER);
+    QString cmd = msg.left(del);
+    QStringList args = msg.trimmed().mid(del+1).split(',');
+    if (cmd==PROGRAM_ARG_OPEN)
+        playlist->addURLs(Helper::pathsToUrls(args));
 }
 
 void KokoVP::toggleFullscreen(bool on)
