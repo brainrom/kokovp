@@ -1,3 +1,7 @@
+/*
+ * Originally copied from https://github.com/mpv-player/mpv-examples/blob/master/libmpv/common/qthelper.hpp
+ */
+
 #ifndef LIBMPV_QTHELPER_H_
 #define LIBMPV_QTHELPER_H_
 

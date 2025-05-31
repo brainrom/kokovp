@@ -159,6 +159,11 @@ KokoVP::KokoVP(QWidget *parent)
 
 KokoVP::~KokoVP()
 {
+    if (Config::i().get("audio/persistent_audio_volume").toBool()) {
+        //Save player properties here to avoid deadlock
+        Config::i().set(PlayerController::volumeLevelConfigKey, player->getProp("volume"));
+        Config::i().set(PlayerController::audioMutedConfigKey, player->getProp("mute"));
+    }
     fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
@@ -499,7 +504,7 @@ void KokoVP::handleTracks()
     }
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool());
+        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool(), Config::i().get("audio/persistent_audio_volume", false).toBool());
 
     player->setProp("pause", false);
 }
