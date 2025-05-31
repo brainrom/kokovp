@@ -46,6 +46,9 @@ public:
 
     explicit PlayerController(PlayerWidget *parent = nullptr);
 
+    static const QString volumeLevelConfigKey;
+    static const QString audioMutedConfigKey;
+
     QString currentFile() { return getProp("path").toString(); }
     QString lastOpenFile() { return lastFile; }
 

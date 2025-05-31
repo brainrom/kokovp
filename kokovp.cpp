@@ -159,6 +159,11 @@ KokoVP::KokoVP(QWidget *parent)
 
 KokoVP::~KokoVP()
 {
+    if (Config::i().get("audio/persistent_audio_volume").toBool()) {
+        //Save player properties here to avoid deadlock
+        Config::i().set(PlayerController::volumeLevelConfigKey, player->getProp("volume"));
+        Config::i().set(PlayerController::audioMutedConfigKey, player->getProp("mute"));
+    }
     fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
@@ -284,7 +289,7 @@ void KokoVP::populateMenu()
     BistableAction *muteAct = new BistableAction(Qt::Key_M, audioMenu, "mute");
     muteAct->setCheckable(true);
     muteAct->setPassiveState(tr("Mute"), QIcon::fromTheme("audio-volume-high"));
-    muteAct->setActiveState(tr("Mute"), QIcon::fromTheme("audio-volume-muted"));
+    muteAct->setActiveState(tr("Unmute"), QIcon::fromTheme("audio-volume-muted"));
     connect(player->prop("mute"), &PropertyObserver::changedBool, muteAct, &BistableAction::switchState);
     connect(muteAct, &QAction::toggled, player->prop("mute"), &PropertyObserver::set);
 
@@ -499,7 +504,7 @@ void KokoVP::handleTracks()
     }
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool());
+        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool(), Config::i().get("audio/persistent_audio_volume", false).toBool());
 
     player->setProp("pause", false);
 }

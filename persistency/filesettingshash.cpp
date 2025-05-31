@@ -45,7 +45,7 @@ QString FileSettingsHash::configFile(const QString & filename) {
     return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
 }
 
-bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
+bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos, bool persistentVolume) {
     QString config_file = configFile(filename);
     if (!QFile::exists(config_file))
         return false;
@@ -55,8 +55,12 @@ bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
         QSettings settings(config_file, QSettings::IniFormat);
 
         settings.beginGroup("props");
-        for (auto &p : persistentProps)
+        for (auto &p : persistentProps) {
+            if (persistentVolume && "volume" == p)
+                continue;
+            qDebug() << "Loading property " << p << ".\n";
             p_player->prop(p)->set(settings.value(p));
+        }
 
         if (loadTimepos)
             p_player->seekAbsolute(settings.value("time-pos").toDouble());

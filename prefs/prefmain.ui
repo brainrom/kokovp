@@ -64,6 +64,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="cbPersistentAudioVolume">
+         <property name="text">
+          <string>Persistent Audio Volume</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QLabel" name="label">
@@ -295,7 +302,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../icons/res.qrc"/>
+  <include location="../icons.qrc"/>
  </resources>
  <connections/>
 </ui>
