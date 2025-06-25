@@ -24,6 +24,7 @@
 #include <QActionEvent>
 #include <QActionGroup>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QToolBar>
 #include <QStandardPaths>
 #include <QStyle>
