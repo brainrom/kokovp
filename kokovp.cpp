@@ -55,7 +55,7 @@ QString extfolderRewriteRule(const PlayerController::Track &t)
     if (!t.isExternal)
         return QString();
 
-    QFileInfo fI(t.mediaUrl);
+    QFileInfo fI(t.filename);
     QString fName = fI.fileName();
 
     if (fI.fileName()==t.title)
@@ -84,8 +84,8 @@ KokoVP::KokoVP(QWidget *parent)
     createPlaylistDock();
 
     connect(player, &PlayerController::tracksUpdated, this, &KokoVP::handleTracks);
-    connect(player, &PlayerController::mediaMetaUpdated, playlist, &Playlist::setCurrentRowMetainfo);
-    connect(player, &PlayerController::endMediaRessource, this, &KokoVP::handleEOF);
+    connect(player, &PlayerController::fileMetaUpdated, playlist, &Playlist::setCurrentRowMetainfo);
+    connect(player, &PlayerController::endFile, this, &KokoVP::handleEOF);
     connect(playerWidget, &PlayerWidget::draggedURLS, playlist, &Playlist::addURLs);
     connect(playlist, &Playlist::playRequest, this, qOverload<QUrl>(&KokoVP::playFile));
 
@@ -161,7 +161,7 @@ KokoVP::KokoVP(QWidget *parent)
 
 KokoVP::~KokoVP()
 {
-    fileSettings->saveSettingsFor(player->lastOpenMediaUrl(), true); // Always save time-pos on exit
+    fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
 void KokoVP::handleNewMessage(const ProgramArgument &msg)
@@ -519,7 +519,7 @@ void KokoVP::handleTracks()
     }
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->loadSettingsFor(player->currentMediaUrl(), Config::i().get("play_mode/keep_timepos", true).toBool());
+        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool());
 
     player->setProp("pause", false);
 }
@@ -529,7 +529,7 @@ void KokoVP::handleEOF(bool wasStopped)
     setWindowTitle("KokoVP");
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->saveSettingsFor(player->lastOpenMediaUrl(), wasStopped); // If file is ended, then time-pos shouldn't be saved
+        fileSettings->saveSettingsFor(player->lastOpenFile(), wasStopped); // If file is ended, then time-pos shouldn't be saved
 
     // It's better to reset tracks to auto on EOF instead of load event, to ensure, that tracks' ids events will be generated in time
     if (wasStopped || !Config::i().get("play_mode/keep_tracknums_for_next", false).toBool())
@@ -599,7 +599,7 @@ void KokoVP::setAudioDevice(QAction *audioDeviceAction)
 
 void KokoVP::tryPlayCurrent()
 {
-    if (player->currentMediaUrl().isEmpty())
+    if (player->currentFile().isEmpty())
         playlist->playCurrent();
 }
 

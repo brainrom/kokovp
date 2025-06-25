@@ -26,9 +26,9 @@ PlayerController::PlayerController(PlayerWidget *parent)
     prop("volume")->set(50);
     prop("pause")->set(true);
     p->setProp("audio-file-auto-exts", Extensions.audio());
-    connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleMediaLoad);
-    connect(p, &PlayerWidget::endFile, this, &PlayerController::endMediaRessource);
-    connect(p, &PlayerWidget::endFile, this, &PlayerController::handleMediaEnd);
+    connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleFileLoad);
+    connect(p, &PlayerWidget::endFile, this, &PlayerController::endFile);
+    connect(p, &PlayerWidget::endFile, this, &PlayerController::handleFileEnd);
 }
 
 PropertyObserver *PlayerController::prop(QString name)
@@ -51,22 +51,22 @@ void PlayerController::setOption(const QString &name, const QVariant &value)
     p->setOption(name, value);
 }
 
-void PlayerController::handleMediaEnd()
+void PlayerController::handleFileEnd()
 {
-    haveMediaUrl = false;
-    if (!queuedMediaUrl.isEmpty())
+    haveFile = false;
+    if (!queuedFile.isEmpty())
     {
-        QUrl url = queuedMediaUrl;
-        queuedMediaUrl = QUrl();
+        QUrl url = queuedFile;
+        queuedFile = QUrl();
         open(url);
     }
 }
 
 void PlayerController::open(const QUrl &url)
 {
-    if (haveMediaUrl)
+    if (haveFile)
     {
-        queuedMediaUrl = url;
+        queuedFile = url;
         return stop();
     }
     p_tracks.clear();
@@ -164,10 +164,10 @@ bool PlayerController::isPlaying()
     return !getProp("pause").toBool();
 }
 
-void PlayerController::handleMediaLoad()
+void PlayerController::handleFileLoad()
 {
-    lastMediaUrl = currentMediaUrl();
-    haveMediaUrl = true;
+    lastFile = currentFile();
+    haveFile = true;
     bool ok;
     int tracksCount = getProp("track-list/count").toInt(&ok);
     assert(ok);
@@ -188,12 +188,12 @@ void PlayerController::handleMediaLoad()
             t.type = Track::TRACK_TYPE_SUB;
 
         if (t.isExternal)
-            t.mediaUrl = p->getProp(trackAddr + "external-mediaUrl").toString();
+            t.filename = p->getProp(trackAddr + "external-filename").toString();
 
         p_tracks.append(t);
     }
     //p->command(QVariantList({"vf", "clr", ""})); //SVP
 
     emit tracksUpdated();
-    emit mediaMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
+    emit fileMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
 }

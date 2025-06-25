@@ -40,14 +40,14 @@ public:
         TrackType type;
         QString title;
         QString lang;
-        QString mediaUrl;
+        QString filename;
         bool isExternal;
     };
 
     explicit PlayerController(PlayerWidget *parent = nullptr);
 
-    QString currentMediaUrl() { return getProp("path").toString(); }
-    QString lastOpenMediaUrl() { return lastMediaUrl; }
+    QString currentFile() { return getProp("path").toString(); }
+    QString lastOpenFile() { return lastFile; }
 
     PropertyObserver *prop(QString name);
     void setProp(const QString& name, const QVariant& value);
@@ -82,11 +82,11 @@ public:
 
 signals:
     void tracksUpdated();
-    void mediaMetaUpdated(QString label, double duration);
-    void endMediaRessource(bool wasStopped);
+    void fileMetaUpdated(QString label, double duration);
+    void endFile(bool wasStopped);
 private:
-    void handleMediaEnd();
-    void handleMediaLoad();
+    void handleFileEnd();
+    void handleFileLoad();
 
     PlayerWidget *p;
 
@@ -98,9 +98,9 @@ private:
 
     QList<Track> p_tracks;
 
-    QUrl queuedMediaUrl;
-    QString lastMediaUrl;
-    bool haveMediaUrl = false;
+    QUrl queuedFile;
+    QString lastFile;
+    bool haveFile = false;
 };
 
 #endif // PLAYERCONTROLLER_H
