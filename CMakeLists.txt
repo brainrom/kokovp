@@ -21,6 +21,7 @@ find_package(QT NAMES Qt6)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools OpenGLWidgets Network Xml)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(mpv REQUIRED mpv)
+pkg_check_modules(AmberMpris REQUIRED ambermpris6)
 
 # Libraries
 set(LIBRARIES
@@ -30,6 +31,7 @@ set(LIBRARIES
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Xml
     ${mpv_LIBRARIES}
+    ${AmberMpris_LIBRARIES}
 )
 
 set(TS_FILES KokoVP_ru_RU.ts)
@@ -126,7 +128,7 @@ qt_wrap_ui(FORMS ${UI})
 qt_create_translation(QM_FILES ${TS_FILES} ${MAIN_SRC})
 qt_add_resources(QRC_CPP icons.qrc)
 
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} "/usr/include/AmberMpris")
 
 add_executable(kokovp ${MOC_FILES} ${FORMS} ${MAIN_SRC} ${QRC_CPP})
 target_link_libraries(kokovp ${LIBRARIES})

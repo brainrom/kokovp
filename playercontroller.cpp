@@ -19,6 +19,7 @@
 #include "playerwidget.h"
 #include "helper.h"
 
+
 PlayerController::PlayerController(PlayerWidget *parent)
     : QObject{parent}
 {
@@ -108,6 +109,7 @@ void PlayerController::stop()
 void PlayerController::togglePlayback()
 {
     p->setProp("pause", isPlaying());
+    emit playbackChanged();
 }
 
 void PlayerController::seekAbsolute(double s)
@@ -196,4 +198,5 @@ void PlayerController::handleFileLoad()
 
     emit tracksUpdated();
     emit fileMetaUpdated(p->getProp("media-title").toString(), prop("duration")->get().toDouble());
+    emit playbackChanged();
 }
