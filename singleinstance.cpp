@@ -16,14 +16,12 @@
 */
 #include "singleinstance.h"
 
-#include <QDataStream>
 #include <QDebug>
 #include <QIODevice>
 #include <QLocalSocket>
 #include <QLocalServer>
 #include <qflags.h>
 
-#include "program_arg.h"
 
 SingleInstance::SingleInstance(QString appName, QObject *parent)
     : p_appName(appName), QObject{parent}

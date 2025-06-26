@@ -62,20 +62,20 @@ void PlayerController::handleFileEnd()
     }
 }
 
-void PlayerController::open(const QUrl &url)
+void PlayerController::open(const QUrl &file)
 {
     if (haveFile)
     {
-        queuedFile = url;
+        queuedFile = file;
         return stop();
     }
     p_tracks.clear();
 
     // Here we need to scan siblings folder for possible external subtitles and audio
     //, then set it to sub-file-paths and audio-file-paths OPTIONs (not properties)
-    if (url.isLocalFile())
+    if (file.isLocalFile())
     {
-        QDir mediaDir = QFileInfo(url.toLocalFile()).absoluteDir();
+        QDir mediaDir = QFileInfo(file.toLocalFile()).absoluteDir();
 
         if (p_extSubMaxDepth>=0 && p_extSubMode!="no")
         {
@@ -94,7 +94,7 @@ void PlayerController::open(const QUrl &url)
         }
     }
 
-    p->command(QStringList{"loadfile", url.toString()});
+    p->command(QStringList{"loadfile", file.toString()});
 }
 
 void PlayerController::stop()

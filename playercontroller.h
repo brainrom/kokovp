@@ -58,7 +58,7 @@ public:
     void setExtSubOptions(QString mode, int depth) { p_extSubMode = mode; p_extSubMaxDepth = depth; }
     void setExtAudioOptions(QString mode, int depth) { p_extAudioMode = mode; p_extAudioMaxDepth = depth; }
 
-    void open(const QUrl &url);
+    void open(const QUrl &file);
     void stop();
 
     void togglePlayback();
