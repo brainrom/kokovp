@@ -24,6 +24,7 @@
 #include <QActionEvent>
 #include <QActionGroup>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QToolBar>
 #include <QStandardPaths>
 #include <QStyle>
@@ -43,6 +44,7 @@
 #include "config.h"
 #include "cache.h"
 #include "helper.h"
+#include "program_arg.h"
 
 #include "prefs/prefdialog.h"
 #include "prefs/prefappearance.h"
@@ -55,6 +57,7 @@ QString extfolderRewriteRule(const PlayerController::Track &t)
         return QString();
 
     QFileInfo fI(t.filename);
+    QString fName = fI.fileName();
 
     if (fI.fileName()==t.title)
         return QApplication::translate("KokoVP", "[EXT] ")+fI.dir().dirName();
@@ -162,15 +165,13 @@ KokoVP::~KokoVP()
     fileSettings->saveSettingsFor(player->lastOpenFile(), true); // Always save time-pos on exit
 }
 
-void KokoVP::handleNewMessage(QString msg)
+void KokoVP::handleNewMessage(const QString &msg)
 {
-    int del = msg.indexOf(':');
+    int del = msg.indexOf(PROGRAM_ARG_DELIMITER);
     QString cmd = msg.left(del);
     QStringList args = msg.trimmed().mid(del+1).split(',');
-    if (cmd=="open")
+    if (cmd==PROGRAM_ARG_OPEN)
         playlist->addURLs(Helper::pathsToUrls(args));
-    else if (cmd=="playlast")
-        QTimer::singleShot(100, playlist, &Playlist::playLast); // Workaroun to wait until Qt event loop and libmpv will be ready
 }
 
 void KokoVP::toggleFullscreen(bool on)
@@ -221,8 +222,11 @@ void KokoVP::populateMenu()
     ActionWrapper *openDirectoryAct = new ActionWrapper(tr("Directory..."), QKeySequence(), openMenu, "openDirectory", QIcon::fromTheme("folder-open"));
     connect(openDirectoryAct, &QAction::triggered, this, qOverload<>(&KokoVP::openDirectory));
 
+    ActionWrapper *openUrlAct = new ActionWrapper(tr("URL"), QKeySequence(), openMenu, "openUrl", QIcon::fromTheme("gnumeric-link-url"));
+    connect(openUrlAct, &QAction::triggered, this, qOverload<>(&KokoVP::openUrl));
+
     ActionWrapper *exitAct = new ActionWrapper(tr("Exit"), QKeySequence("Ctrl+Q"), openMenu, "exit", QIcon::fromTheme("application-exit"));
-    connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
+    connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);   connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
 
     // --- Play ---
     BistableAction *playPauseAct = new BistableAction(Qt::Key_Space, playMenu, "play_pause");
@@ -458,6 +462,24 @@ void KokoVP::openDirectory()
     playlist->clear();
     playlist->addURLs(urls);
     playlist->playFirst();
+}
+
+void KokoVP::openUrl()
+{
+    auto dialog = QInputDialog(this);
+    dialog.setWindowTitle(tr("Open URL"));
+    dialog.setOkButtonText(tr("Open"));
+    dialog.setInputMode(QInputDialog::TextInput);
+    dialog.setTextValue("https://");
+    if (dialog.exec() == QDialog::Accepted) {
+        auto url = QUrl{dialog.textValue()};
+        if (url.isValid() && !url.host().isEmpty()) {
+            playlist->addURLs(QList{url});
+            playlist->playLast();
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Invalid URL"));
+        }
+    }
 }
 
 void KokoVP::videoScreenshot()

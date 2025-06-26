@@ -56,9 +56,9 @@ void PlayerController::handleFileEnd()
     haveFile = false;
     if (!queuedFile.isEmpty())
     {
-        QUrl f = queuedFile;
+        QUrl url = queuedFile;
         queuedFile = QUrl();
-        open(f);
+        open(url);
     }
 }
 
@@ -94,7 +94,7 @@ void PlayerController::open(const QUrl &file)
         }
     }
 
-    p->command(QStringList{"loadfile", file.path()});
+    p->command(QStringList{"loadfile", file.toString()});
 }
 
 void PlayerController::stop()

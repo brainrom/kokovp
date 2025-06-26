@@ -29,11 +29,12 @@ public:
     explicit SingleInstance(QString appName, QObject *parent = nullptr);
     bool connectServer();
     void closeSocket();
-    void sendMessage(QString msg);
+    void sendMessage(const QString &msg);
 
     bool hostServer();
 signals:
-    void newMessage(QString msg);
+    void newMessage(const QString &msg);
+    void handleNewMessage(const QString &msg);
 private:
     void handleNewConnection();
     void readData();
