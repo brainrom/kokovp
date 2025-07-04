@@ -168,6 +168,7 @@ KokoVP::KokoVP(QWidget *parent)
     connect(player, &PlayerController::playbackChanged, mpris, [this](){mpris->setPlaybackStatus(
                 player->isPlaying() ? Amber::Mpris::PlaybackStatus::Playing : Amber::Mpris::PlaybackStatus::Paused);});
     connect(player, &PlayerController::fileMetaUpdated, mpris, [this](QString label, double duration){mpris->metaData()->setTitle(label); mpris->metaData()->setDuration(duration);});
+    connect(mpris, &Amber::MprisPlayer::playRequested, player, [this](){if (!player->isPlaying()) { player->togglePlayback(); tryPlayCurrent(); }});
     connect(mpris, &Amber::MprisPlayer::playPauseRequested, player, &PlayerController::togglePlayback);
     connect(mpris, &Amber::MprisPlayer::stopRequested, player, &PlayerController::stop);
     connect(mpris, &Amber::MprisPlayer::seekRequested, player, &PlayerController::seekRelative);
