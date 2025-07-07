@@ -16,6 +16,7 @@
 */
 #include "singleinstance.h"
 
+#include <QDebug>
 #include <QLocalSocket>
 #include <QLocalServer>
 

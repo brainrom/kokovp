@@ -27,6 +27,9 @@
 #include <QToolBar>
 #include <QStandardPaths>
 #include <QStyle>
+#include <AmberMpris/Mpris>
+#include <AmberMpris/MprisPlayer>
+#include <AmberMpris/MprisMetaData>
 
 #include "autohidewidget.h"
 
@@ -152,6 +155,34 @@ KokoVP::KokoVP(QWidget *parent)
     bottomBar = new QToolBar(this);
     bottomBar->addActions(barActions);
     addToolBar(Qt::BottomToolBarArea, bottomBar);
+
+    // Mpris
+    mpris = new Amber::MprisPlayer(this);
+    mpris->setServiceName("org.mpris.MediaPlayer2.KokoVP");
+    mpris->setIdentity("KokoVP");
+    mpris->setSupportedUriSchemes(QStringList{"file", "http", "https"});
+    // TODO: Can we get the mimetypes from .desktop file ?
+    mpris->setSupportedMimeTypes(QStringList{"audio/mpeg", "audio/x-mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-scpls", "audio/x-mpegurl", "audio/x-mpegurl",
+            "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpegurl", "audio/x-mpeg"});
+    mpris->setPlaybackStatus(Amber::Mpris::PlaybackStatus::Stopped);
+    connect(player, &PlayerController::playbackChanged, mpris, [this](){mpris->setPlaybackStatus(
+                player->isPlaying() ? Amber::Mpris::PlaybackStatus::Playing : Amber::Mpris::PlaybackStatus::Paused);});
+    connect(player, &PlayerController::fileMetaUpdated, mpris, [this](QString label, double duration){mpris->metaData()->setTitle(label); mpris->metaData()->setDuration(duration);});
+    connect(mpris, &Amber::MprisPlayer::playRequested, player, [this](){if (!player->isPlaying()) { player->togglePlayback(); tryPlayCurrent(); }});
+    connect(mpris, &Amber::MprisPlayer::playPauseRequested, player, &PlayerController::togglePlayback);
+    connect(mpris, &Amber::MprisPlayer::stopRequested, player, &PlayerController::stop);
+    connect(mpris, &Amber::MprisPlayer::seekRequested, player, &PlayerController::seekRelative);
+    connect(mpris, &Amber::MprisPlayer::nextRequested, playlist, &Playlist::next);
+    connect(mpris, &Amber::MprisPlayer::previousRequested, playlist, &Playlist::prev);
+    // connect(mpris, &Amber::MprisPlayer::volumeRequested, player->prop("volume"), &PropertyObserver::set); Necessary ? How does it integrate with system volume?
+    connect(mpris, &Amber::MprisPlayer::fullscreenRequested, this, &KokoVP::toggleFullscreen);
+    mpris->setCanControl(true);
+    mpris->setCanPlay(true);
+    mpris->setCanPause(true);
+    mpris->setCanSeek(true);
+    mpris->setCanGoNext(true);
+    mpris->setCanGoPrevious(true);
+    mpris->setCanSetFullscreen(true);
 
     // CONFIGURATION
     readConfig();
@@ -524,6 +555,8 @@ void KokoVP::handleEOF(bool wasStopped)
 
     if (!wasStopped && Config::i().get("play_mode/next_on_eof", true).toBool())
         playlist->next();
+    else
+        mpris->setPlaybackStatus(Amber::Mpris::PlaybackStatus::Stopped);
 }
 
 void KokoVP::callPropEditor(QAction *callEditorAction)
