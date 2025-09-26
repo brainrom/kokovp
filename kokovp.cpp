@@ -226,7 +226,7 @@ void KokoVP::populateMenu()
     connect(openUrlAct, &QAction::triggered, this, qOverload<>(&KokoVP::openUrl));
 
     ActionWrapper *exitAct = new ActionWrapper(tr("Exit"), QKeySequence("Ctrl+Q"), openMenu, "exit", QIcon::fromTheme("application-exit"));
-    connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);   connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
+    connect(exitAct, &QAction::triggered, qApp, &QApplication::exit);
 
     // --- Play ---
     BistableAction *playPauseAct = new BistableAction(Qt::Key_Space, playMenu, "play_pause");
