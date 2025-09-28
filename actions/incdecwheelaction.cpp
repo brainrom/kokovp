@@ -48,7 +48,6 @@ IncDecWheelAction::IncDecWheelAction(QString label, QString label_template, QStr
 
 void IncDecWheelAction::setDelta(double newDelta)
 {
-    newDelta = abs(newDelta);
     if (newDelta==0)
         newDelta = 1;
 

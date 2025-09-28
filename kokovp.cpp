@@ -317,10 +317,10 @@ void KokoVP::populateMenu()
     subtitlesMenu->addSeparator();
 
     IncDecWheelAction *subPosActions = new IncDecWheelAction(tr("Position"), tr("Subtitle position %1"), "sub_pos", subtitlesMenu);
-    subPosActions->setDelta(Config::i().get("steps/sub_pos_acts", 1).toDouble());
+    subPosActions->setDelta(-Config::i().get("steps/sub_pos_acts", 1).toDouble());
     connect(subPosActions, &IncDecWheelAction::valueChanged, player->prop("sub-pos"), &PropertyObserver::setRelative);
-    subPosActions->setIncOptions(tr("Down"), Qt::Key_2);
-    subPosActions->setDecOptions(tr("Up"), Qt::Key_8);
+    subPosActions->setIncOptions(tr("Up"), Qt::Key_8);
+    subPosActions->setDecOptions(tr("Down"), Qt::Key_2);
     subtitlesMenu->addSeparator();
 
     IncDecWheelAction *subScaleActions = new IncDecWheelAction(tr("Size"), tr("Size %1"), "sub_scale_", subtitlesMenu);
