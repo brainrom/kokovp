@@ -188,7 +188,14 @@ void PlayerController::handleFileLoad()
             t.type = Track::TRACK_TYPE_SUB;
 
         if (t.isExternal)
+        {
             t.filename = p->getProp(trackAddr + "external-filename").toString();
+            QFileInfo fI(t.filename);
+            // mpv after 57210df returns complete sufix as fallback title instead of basename.
+            // Clean it early so rewrite rule can rely on empty title as a condition to rewrite
+            if (fI.fileName()==t.title || fI.completeSuffix()==t.title)
+                t.title = QString();
+        }
 
         p_tracks.append(t);
     }

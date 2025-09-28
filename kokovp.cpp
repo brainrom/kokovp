@@ -56,10 +56,10 @@ QString extfolderRewriteRule(const PlayerController::Track &t)
 
     QFileInfo fI(t.filename);
 
-    if (fI.fileName()==t.title)
+    if (t.title.isEmpty())
         return QApplication::translate("KokoVP", "[EXT] ")+fI.dir().dirName();
-    else
-        return QApplication::translate("KokoVP", "[EXT] ")+TracksMenu::defRule(t);
+
+    return QApplication::translate("KokoVP", "[EXT] ")+TracksMenu::defRule(t);
 }
 
 KokoVP* KokoVP::inst = nullptr;
