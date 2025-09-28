@@ -18,6 +18,7 @@
 
 #include <QLocalSocket>
 #include <QLocalServer>
+#include <QDebug>
 
 SingleInstance::SingleInstance(QString appName, QObject *parent)
     : p_appName(appName), QObject{parent}
