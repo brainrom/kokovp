@@ -268,9 +268,11 @@ void KokoVP::populateMenu()
     connect(screenshotWithSubsAct, &QAction::triggered, this, &KokoVP::videoSubScreenshot);
 
     // --- Audio ---
-    // TODO: add external
     audioTracksMenu = bindTracksMenu(QIcon::fromTheme("multimedia-volume-control"), tr("Track"), "aid", audioMenu);
     audioTracksMenu->setRewriteRule(extfolderRewriteRule);
+
+    ActionWrapper *audioAddExternal = new ActionWrapper(tr("Add external..."), QKeySequence(), audioMenu, "audio_ext", QIcon());
+    connect(audioAddExternal, &QAction::triggered, this, &KokoVP::addExternalFile);
 
     populateAudioDeviceMenu();
 
@@ -299,11 +301,13 @@ void KokoVP::populateMenu()
     callPropEditorAg->addAction(audioDelaySetAct);
 
     // --- Subtitles ---
-    // TODO: add external
     subTracksMenu = bindTracksMenu(QIcon::fromTheme("media-view-subtitles"), tr("Primary track"), "sid", subtitlesMenu);
     subTracksMenu->setRewriteRule(extfolderRewriteRule);
     secondSubTracksMenu = bindTracksMenu(QIcon::fromTheme("media-view-subtitles"), tr("Secondary track"), "secondary-sid", subtitlesMenu);
     subtitlesMenu->addSeparator();
+
+    ActionWrapper *subAddExternal = new ActionWrapper(tr("Add external..."), QKeySequence(), subtitlesMenu, "sub_ext", QIcon());
+    connect(subAddExternal, &QAction::triggered, this, &KokoVP::addExternalFile);
 
     ActionWrapper *subCopyAct = new ActionWrapper(tr("Copy subtitle content"), QKeySequence("Ctrl+C"), subtitlesMenu, "sub_copy", QIcon::fromTheme("clipboard"));
     connect(subCopyAct, &QAction::triggered, this, [this]{ QGuiApplication::clipboard()->setText(player->getProp("sub-text").toString()); });
@@ -452,6 +456,18 @@ void KokoVP::openFiles()
     playlist->playLast();
 }
 
+void KokoVP::addExternalFile()
+{
+    QStringList extFiles;
+    extFiles = fileSettings->loadExtFilesList(player->currentFile());
+    QList<QUrl> urls = Helper::openExternalTracksFiles(this);
+    for (auto &url : urls)
+        extFiles.emplaceBack(url.toLocalFile());
+
+    fileSettings->saveExtFilesList(player->currentFile(), extFiles);
+    playlist->playCurrent();
+}
+
 void KokoVP::openDirectory()
 {
     const auto &urls = Helper::openMediaDirectory(this);
@@ -587,7 +603,10 @@ void KokoVP::tryPlayCurrent()
 }
 
 void KokoVP::playFile(QUrl file) {
-    player->open(file);
+    QStringList extFiles;
+    if (file.isLocalFile())
+        extFiles = fileSettings->loadExtFilesList(file.toLocalFile());
+    player->open(file, {{"external-files", extFiles}});
     setWindowTitle(QString("%1 - KokoVP").arg(file.fileName()));
 }
 

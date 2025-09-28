@@ -72,6 +72,21 @@ const QList<QUrl> Helper::openMediaFiles(QWidget *parent)
     return s;
 }
 
+const QList<QUrl> Helper::openExternalTracksFiles(QWidget *parent)
+{
+    QList<QUrl> s = QFileDialog::getOpenFileUrls(
+        parent, QApplication::translate("Helper", "Choose a file"), Cache::i().get("file_open/last_file_dir", QStandardPaths::standardLocations(QStandardPaths::MoviesLocation)).toString(),
+            QApplication::translate("Helper", "Audio") + Extensions.audio().forFilter()+";;" +
+            QApplication::translate("Helper", "Subtitles") + Extensions.subtitles().forFilter()+";;" +
+            QApplication::translate("Helper", "All files") +" (*.*)" );
+
+    if (s.count()>0 && QFile::exists(s.at(0).toLocalFile()))
+    {
+        Cache::i().set("file_open/last_dir", QFileInfo(s.at(0).toLocalFile()).absolutePath());
+    }
+    return s;
+}
+
 const QList<QUrl> Helper::openMediaDirectory(QWidget *parent)
 {
     QString dirPath = QFileDialog::getExistingDirectory(parent, QApplication::translate("Helper", "Choose a directory"),

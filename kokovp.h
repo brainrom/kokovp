@@ -54,6 +54,7 @@ private:
     void populateAudioDeviceMenu();
     void setAudioDevice(QAction *audioDeviceAction);
 
+    void addExternalFile();
     void tryPlayCurrent();
     void videoScreenshot();
     void videoSubScreenshot();
