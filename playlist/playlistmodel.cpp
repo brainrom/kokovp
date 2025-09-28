@@ -78,6 +78,10 @@ QVariant PlaylistModel::data(const QModelIndex &index, int role) const
             return Helper::formatTime(item.duration);
         }
     }
+    case Qt::ToolTipRole:
+        if (index.column()==COL_LABEL)
+            return item.label;
+        return QVariant();
     case PlaylistModel::CurrentRole:
         return current.isValid() && index.isValid() && current.row() == index.row();
     case PlaylistModel::URLRole:
