@@ -61,7 +61,7 @@ class MpvWidget: public QOpenGLWidget
 public:
     MpvWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     ~MpvWidget();
-    void command(const QVariant& params);
+    QVariant command(const QVariant& params);
     void setProp(const QString& name, const QVariant& value);
     QVariant getProp(const QString& name) const;
     void setOption(const QString& name, const QVariant& value);

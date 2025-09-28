@@ -153,9 +153,11 @@ void PlayerController::frameStep(int step) {
     switch (step)
     {
     case 1:
-        return p->command(cmd_forward);
+        p->command(cmd_forward);
+        return;
     case -1:
-        return p->command(cmd_back);
+        p->command(cmd_back);
+        return;
     };
 }
 

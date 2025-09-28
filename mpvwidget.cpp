@@ -71,9 +71,9 @@ MpvWidget::~MpvWidget()
     mpv_terminate_destroy(mpv);
 }
 
-void MpvWidget::command(const QVariant& params)
+QVariant MpvWidget::command(const QVariant& params)
 {
-    mpv::qt::command(mpv, params);
+    return mpv::qt::command(mpv, params);
 }
 
 void MpvWidget::setProp(const QString& name, const QVariant& value)

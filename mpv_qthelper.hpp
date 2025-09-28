@@ -83,6 +83,10 @@ static inline QVariant node_to_variant(const mpv_node *node)
         }
         return QVariant(qmap);
     }
+    case MPV_FORMAT_BYTE_ARRAY: {
+        mpv_byte_array *ba = node->u.ba;
+        return QVariant(QByteArray((const char*)ba->data, ba->size));
+    }
     default: // MPV_FORMAT_NONE, unknown values (e.g. future extensions)
         return QVariant();
     }
