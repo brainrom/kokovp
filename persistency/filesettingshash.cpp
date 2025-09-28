@@ -67,6 +67,9 @@ bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
 }
 
 bool FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
+    if (filename.isEmpty())
+        return false;
+
     QString config_file = configFile(filename);
     QString output_dir = QFileInfo(config_file).absolutePath();
 
