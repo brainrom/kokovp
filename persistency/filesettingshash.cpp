@@ -77,7 +77,8 @@ QByteArray FileSettingsHash::loadOrCreateSalt()
     return salt;
 }
 
-bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
+bool FileSettingsHash::settingsFor(QString filename, QString &path)
+{
     QString config_file = configFileSHA256(filename);
     if (!QFile::exists(config_file))
     {
@@ -90,8 +91,16 @@ bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
     if (config_file.isEmpty())
         return false;
 
-    QSettings settings(config_file, QSettings::IniFormat);
+    path = config_file;
+    return true;
+}
 
+bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
+    QString config_file;
+    if (!settingsFor(filename, config_file))
+        return false;
+
+    QSettings settings(config_file, QSettings::IniFormat);
     settings.beginGroup("props");
     for (auto &p : persistentProps)
         p_player->prop(p)->set(settings.value(p));
@@ -100,6 +109,29 @@ bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
         p_player->seekAbsolute(settings.value("time-pos").toDouble());
     settings.endGroup();
     return true;
+}
+
+
+QStringList FileSettingsHash::loadExtFilesList(QString filename)
+{
+    QString config_file;
+    if (!settingsFor(filename, config_file))
+        return QStringList();
+    QSettings settings(config_file, QSettings::IniFormat);
+    settings.beginGroup("options");
+    return settings.value("external-files").toStringList();
+}
+
+void FileSettingsHash::saveExtFilesList(QString filename, const QStringList &extFilesList)
+{
+    QString config_file;
+    settingsFor(filename, config_file);
+
+    QSettings settings(config_file, QSettings::IniFormat);
+    settings.beginGroup("options");
+    settings.setValue("external-files", extFilesList);
+    settings.endGroup();
+    settings.sync();
 }
 
 bool FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {

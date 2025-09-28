@@ -34,7 +34,10 @@ public:
     FileSettingsHash(QString directory, PlayerController *player, QObject *parent = nullptr);
     bool loadSettingsFor(QString filename, bool loadTimepos = true);
     bool saveSettingsFor(QString filename, bool saveTimepos = true);
+    QStringList loadExtFilesList(QString filename);
+    void saveExtFilesList(QString filename, const QStringList &extFilesList);
 private:
+    bool settingsFor(QString filename, QString &path);
     void updateCurrentProps(QVariant value);
     QString configFile(const QString & filename);
     QString configFileSHA256(const QString & filename);
