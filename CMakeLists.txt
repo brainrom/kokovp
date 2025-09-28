@@ -53,7 +53,6 @@ qt_wrap_cpp(MOC_FILES
     actions/actionwrapper.h
     actions/seekinterface.h
     actions/bistableaction.h
-    actions/incdecactions.h
     actions/incdecwheelaction.h
 
     prefs/prefappearance.h
@@ -97,7 +96,6 @@ set(MAIN_SRC
     actions/actionwrapper.cpp
     actions/seekinterface.cpp
     actions/bistableaction.cpp
-    actions/incdecactions.cpp
     actions/incdecwheelaction.cpp
 
     prefs/prefappearance.cpp

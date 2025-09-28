@@ -42,9 +42,14 @@ protected:
 private:
     QPoint mousePos;
     QRect mainTextRect, plusRect, minusRect;
+
+    int maxIconWidth = 0;
+    bool menuHasCheckableItems = false;
+
     QSize sizeForMenuItem(QStyleOptionMenuItem *opt);
     void initStyleOption(QStyleOptionMenuItem *opt);
     void updateSize();
+    void updateMenuContext();
     IncDecWheelAction *action;
 };
 
@@ -53,10 +58,8 @@ class IncDecWheelAction : public QWidgetAction
     Q_OBJECT
     friend class IncDecWheelActionWidget;
 public:
-    explicit IncDecWheelAction(QString label, QWidget *parent = nullptr);
+    explicit IncDecWheelAction(QString label, QString label_template, QString name_prefix, QWidget *parent = nullptr);
     void setDelta(double delta);
-    void setNamePrefix(QString name_prefix);
-    void setLabelTemplate(QString labelTemplate);
     void setDecOptions(QString decText, QKeySequence decShortcut);
     void setIncOptions(QString incText, QKeySequence incShortcut);
     QList<QAction*> const actionsList();

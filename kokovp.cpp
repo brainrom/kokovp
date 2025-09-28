@@ -30,7 +30,6 @@
 
 #include "autohidewidget.h"
 
-#include "actions/incdecactions.h"
 #include "actions/bistableaction.h"
 #include "actions/actionwrapper.h"
 #include "actions/timelabelaction.h"
@@ -150,6 +149,7 @@ KokoVP::KokoVP(QWidget *parent)
     autoHide->hide();
 
     bottomBar = new QToolBar(this);
+    bottomBar->setWindowTitle(tr("Bottom bar"));
     bottomBar->addActions(barActions);
     addToolBar(Qt::BottomToolBarArea, bottomBar);
 
@@ -235,20 +235,18 @@ void KokoVP::populateMenu()
     ActionWrapper *stopAct = new ActionWrapper(tr("Stop"), Qt::Key_X, playMenu, "stop", QIcon::fromTheme("media-playback-stop"));
     connect(stopAct, &QAction::triggered, player, &PlayerController::stop);
 
-    IncDecWheelAction *framesActions = new IncDecWheelAction("Frame", playMenu);
+    IncDecWheelAction *framesActions = new IncDecWheelAction(tr("Frame"), tr("%1 frame"), "frame", playMenu);
     connect(framesActions, &IncDecWheelAction::valueChanged, player, &PlayerController::frameStep);
-    framesActions->setNamePrefix("frame");
-    framesActions->setLabelTemplate(tr("%1 frame"));
     framesActions->setDecOptions(tr("Previous"), Qt::Key_Comma);
     framesActions->setIncOptions(tr("Next"), Qt::Key_Period);
 
     seek = new SeekInterface(playMenu);
     connect(seek, &SeekInterface::seek, player, &PlayerController::seekRelative);
 
-    IncDecActionsPair *chaptersActions = new IncDecActionsPair(this);
-    connect(chaptersActions, &IncDecActionsPair::valueChanged, player->prop("chapter"), &PropertyObserver::setRelative);
-    chaptersActions->setDecAction(new ActionWrapper(tr("Previous chapter"), Qt::Key_Exclam, playMenu, "prev_chapter"));
-    chaptersActions->setIncAction(new ActionWrapper(tr("Next chapter"), Qt::Key_At, playMenu, "next_chapter"));
+    IncDecWheelAction *chaptersActions = new IncDecWheelAction(tr("Chapter"), "%1 chapter", "chapter", playMenu);
+    connect(chaptersActions, &IncDecWheelAction::valueChanged, player->prop("chapter"), &PropertyObserver::setRelative);
+    chaptersActions->setDecOptions(tr("Previous"), Qt::Key_Exclam);
+    chaptersActions->setIncOptions(tr("Next"), Qt::Key_At);
 
     ActionWrapper *prevAct = new ActionWrapper(tr("Previous"), QKeySequence("Ctrl+,"), playMenu, "prev", QIcon::fromTheme("media-skip-backward"));
     connect(prevAct, &QAction::triggered, playlist, &Playlist::prev);
@@ -275,11 +273,11 @@ void KokoVP::populateMenu()
 
     populateAudioDeviceMenu();
 
-    IncDecActionsPair *volumeActions = new IncDecActionsPair(this);
+    IncDecWheelAction *volumeActions = new IncDecWheelAction(tr("Volume"), tr("Volume %1"), "volume", audioMenu);
     volumeActions->setDelta(Config::i().get("steps/volume_acts", 5).toDouble());
-    connect(volumeActions, &IncDecActionsPair::valueChanged, player->prop("volume"), &PropertyObserver::setRelative);
-    volumeActions->setIncAction(new ActionWrapper(tr("Volume +"), Qt::Key_Plus, audioMenu, "volume_plus"));
-    volumeActions->setDecAction(new ActionWrapper(tr("Volume -"), Qt::Key_Minus, audioMenu, "volume_minus"));
+    connect(volumeActions, &IncDecWheelAction::valueChanged, player->prop("volume"), &PropertyObserver::setRelative);
+    volumeActions->setIncOptions(tr("+"), Qt::Key_Plus);
+    volumeActions->setDecOptions(tr("-"), Qt::Key_Minus);
 
     BistableAction *muteAct = new BistableAction(Qt::Key_M, audioMenu, "mute");
     muteAct->setCheckable(true);
@@ -288,11 +286,11 @@ void KokoVP::populateMenu()
     connect(player->prop("mute"), &PropertyObserver::changedBool, muteAct, &BistableAction::switchState);
     connect(muteAct, &QAction::toggled, player->prop("mute"), &PropertyObserver::set);
 
-    IncDecActionsPair *audioDelayActions = new IncDecActionsPair(this);
+    IncDecWheelAction *audioDelayActions = new IncDecWheelAction(tr("Delay"), tr("Audio delay %1"), "audio_delay", audioMenu);
     audioDelayActions->setDelta(Config::i().get("steps/audio_delay_acts", 0.1).toDouble());
-    connect(audioDelayActions, &IncDecActionsPair::valueChanged, player->prop("audio-delay"), &PropertyObserver::setRelative);
-    audioDelayActions->setIncAction(new ActionWrapper(tr("Delay +"), QKeySequence(), audioMenu, "audio_delay_plus"));
-    audioDelayActions->setDecAction(new ActionWrapper(tr("Delay -"), QKeySequence(), audioMenu, "audio_delay_minus"));
+    connect(audioDelayActions, &IncDecWheelAction::valueChanged, player->prop("audio-delay"), &PropertyObserver::setRelative);
+    audioDelayActions->setIncOptions(tr("+"), QKeySequence());
+    audioDelayActions->setDecOptions(tr("-"), QKeySequence());
     ActionWrapper *audioDelayResetAct = new ActionWrapper(tr("Reset delay"), QKeySequence(), audioMenu, "audio_delay_reset", QIcon());
     connect(audioDelayResetAct, &QAction::triggered, player->prop("audio-delay"), &PropertyObserver::reset);
     ActionWrapper *audioDelaySetAct = new ActionWrapper(tr("Set delay..."), QKeySequence(), audioMenu, "audio_delay_set", QIcon());
@@ -306,11 +304,11 @@ void KokoVP::populateMenu()
     secondSubTracksMenu = bindTracksMenu(QIcon::fromTheme("media-view-subtitles"), tr("Secondary track"), "secondary-sid", subtitlesMenu);
     subtitlesMenu->addSeparator();
 
-    IncDecActionsPair *subDelayActions = new IncDecActionsPair(this);
+    IncDecWheelAction *subDelayActions = new IncDecWheelAction(tr("Delay"), tr("Subtitle delay %1"), "sub_delay", subtitlesMenu);
     subDelayActions->setDelta(Config::i().get("steps/sub_delay_acts", 0.1).toDouble());
-    connect(subDelayActions, &IncDecActionsPair::valueChanged, player->prop("sub-delay"), &PropertyObserver::setRelative);
-    subDelayActions->setIncAction(new ActionWrapper(tr("Delay +"), QKeySequence(), subtitlesMenu, "sub_delay_plus"));
-    subDelayActions->setDecAction(new ActionWrapper(tr("Delay -"), QKeySequence(), subtitlesMenu, "sub_delay_minus"));
+    connect(subDelayActions, &IncDecWheelAction::valueChanged, player->prop("sub-delay"), &PropertyObserver::setRelative);
+    subDelayActions->setIncOptions(tr("+"), QKeySequence());
+    subDelayActions->setDecOptions(tr("-"), QKeySequence());
     ActionWrapper *subDelaySetAct = new ActionWrapper(tr("Set delay..."), QKeySequence(), subtitlesMenu, "sub_delay_set", QIcon());
     subDelaySetAct->setData(QVariantList{"sub-delay", tr("Set subtitle delay (in seconds)"), -300, 300});
     callPropEditorAg->addAction(subDelaySetAct);
@@ -318,30 +316,31 @@ void KokoVP::populateMenu()
     connect(subDelayResetAct, &QAction::triggered, player->prop("sub-delay"), &PropertyObserver::reset);
     subtitlesMenu->addSeparator();
 
-    IncDecActionsPair *subPosActions = new IncDecActionsPair(this);
+    IncDecWheelAction *subPosActions = new IncDecWheelAction(tr("Position"), tr("Subtitle position %1"), "sub_pos", subtitlesMenu);
     subPosActions->setDelta(Config::i().get("steps/sub_pos_acts", 1).toDouble());
-    connect(subPosActions, &IncDecActionsPair::valueChanged, player->prop("sub-pos"), &PropertyObserver::setRelative);
-    subPosActions->setDecAction(new ActionWrapper(tr("Up"), Qt::Key_8, subtitlesMenu, "sub_pos_plus"));
-    subPosActions->setIncAction(new ActionWrapper(tr("Down"), Qt::Key_2, subtitlesMenu, "sub_pos_minus"));
+    connect(subPosActions, &IncDecWheelAction::valueChanged, player->prop("sub-pos"), &PropertyObserver::setRelative);
+    subPosActions->setIncOptions(tr("Down"), Qt::Key_2);
+    subPosActions->setDecOptions(tr("Up"), Qt::Key_8);
     subtitlesMenu->addSeparator();
 
-    IncDecActionsPair *subScaleActions = new IncDecActionsPair(this);
+    IncDecWheelAction *subScaleActions = new IncDecWheelAction(tr("Size"), tr("Size %1"), "sub_scale_", subtitlesMenu);
     subScaleActions->setDelta(Config::i().get("steps/sub_scale_acts", 0.1).toDouble());
-    connect(subScaleActions, &IncDecActionsPair::valueChanged, player->prop("sub-scale"), &PropertyObserver::setRelative);
-    subScaleActions->setIncAction(new ActionWrapper(tr("Size +"), QKeySequence(), subtitlesMenu, "sub_scale_plus"));
-    subScaleActions->setDecAction(new ActionWrapper(tr("Size -"), QKeySequence(), subtitlesMenu, "sub_scale_minus"));
+    connect(subScaleActions, &IncDecWheelAction::valueChanged, player->prop("sub-scale"), &PropertyObserver::setRelative);
+    subScaleActions->setIncOptions(tr("+"), QKeySequence());
+    subScaleActions->setDecOptions(tr("-"), QKeySequence());
+
     subtitlesMenu->addSeparator();
 
-    IncDecActionsPair *subSeekActions = new IncDecActionsPair(this);
-    connect(subSeekActions, &IncDecActionsPair::valueChanged, player, &PlayerController::subSeekPrimary);
-    subSeekActions->setIncAction(new ActionWrapper(tr("Seek to next subtitle"), QKeySequence(), subtitlesMenu, "sub_seek_plus"));
-    subSeekActions->setDecAction(new ActionWrapper(tr("Seek to previous subtitle"), QKeySequence(), subtitlesMenu, "sub_seek_minus"));
+    IncDecWheelAction *subSeekActions = new IncDecWheelAction(tr("Seek"), tr("Seek to %1 subtitle"), "sub_seek", subtitlesMenu);
+    connect(subSeekActions, &IncDecWheelAction::valueChanged, player, &PlayerController::subSeekPrimary);
+    subSeekActions->setIncOptions(tr("Next"), QKeySequence());
+    subSeekActions->setDecOptions(tr("Previous"), QKeySequence());
     subtitlesMenu->addSeparator();
 
-    IncDecActionsPair *subStepActions = new IncDecActionsPair(this);
-    connect(subStepActions, &IncDecActionsPair::valueChanged, player, &PlayerController::subStepPrimary);
-    subStepActions->setIncAction(new ActionWrapper(tr("Show next subtitle"), QKeySequence(), subtitlesMenu, "sub_step_plus"));
-    subStepActions->setDecAction(new ActionWrapper(tr("Show previous subtitle"), QKeySequence(), subtitlesMenu, "sub_step_minus"));
+    IncDecWheelAction *subStepActions = new IncDecWheelAction(tr("Step"), tr("Step to %1 subtitle"), "sub_step", subtitlesMenu);
+    connect(subStepActions, &IncDecWheelAction::valueChanged, player, &PlayerController::subStepPrimary);
+    subStepActions->setIncOptions(tr("Next"), QKeySequence());
+    subStepActions->setDecOptions(tr("Previous"), QKeySequence());
 
     // --- Misc ---
     ActionWrapper *prefAction = new ActionWrapper(tr("Preferences"), QKeySequence(), miscMenu, "prefs", QIcon::fromTheme("preferences"));

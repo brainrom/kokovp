@@ -21,15 +21,19 @@
 #include <QActionGroup>
 #include <QWheelEvent>
 
-IncDecWheelAction::IncDecWheelAction(QString label, QWidget *parent)
+IncDecWheelAction::IncDecWheelAction(QString label, QString label_template, QString name_prefix, QWidget *parent)
     : QWidgetAction{parent}
 {
     mainText = label;
+    labelTemplate = label_template;
     decText = " - ";
     incText = " + ";
     acts = new QActionGroup(this);
     p_incAction = new QAction(this);
     p_decAction = new QAction(this);
+    p_incAction->setObjectName(name_prefix+"_plus");
+    p_decAction->setObjectName(name_prefix+"_minus");
+
     acts->addAction(p_incAction);
     acts->addAction(p_decAction);
     connect(acts, &QActionGroup::triggered, this, &IncDecWheelAction::handleActions);
@@ -50,17 +54,6 @@ void IncDecWheelAction::setDelta(double newDelta)
 
     delta = newDelta;
     updateAction();
-}
-
-void IncDecWheelAction::setLabelTemplate(QString l)
-{
-    labelTemplate = l;
-}
-
-void IncDecWheelAction::setNamePrefix(QString name_prefix)
-{
-    p_incAction->setObjectName(name_prefix+"_plus");
-    p_decAction->setObjectName(name_prefix+"_minus");
 }
 
 void IncDecWheelAction::setDecOptions(QString newDecText, QKeySequence decShortcut)
@@ -100,6 +93,7 @@ QWidget *IncDecWheelAction::createWidget(QWidget *parent) {
     IncDecWheelActionWidget *w = new IncDecWheelActionWidget(this, parent);
     connect(this, &QAction::changed, w, &IncDecWheelActionWidget::updateSize);
     w->setEnabled(isEnabled());
+    w->setFocusPolicy(Qt::TabFocus);
     return w;
 }
 
@@ -117,8 +111,14 @@ void IncDecWheelAction::addActionToParent(QAction *a)
 IncDecWheelActionWidget::IncDecWheelActionWidget(IncDecWheelAction *action, QWidget *parent) : QWidget{parent}, action{action}
 {
     setMouseTracking(true);
+    if (parent->inherits("QMenu"))
+    {
+        QMenu *w = static_cast<QMenu*>(parent);
+        connect(w, &QMenu::aboutToShow, this, &IncDecWheelActionWidget::updateMenuContext);
+        updateMenuContext();
+    }
+
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    updateSize();
 }
 
 void IncDecWheelActionWidget::updateSize()
@@ -129,24 +129,59 @@ void IncDecWheelActionWidget::updateSize()
     opt.text = action->mainText;
 
     QSize mainSz = sizeForMenuItem(&opt);
+    qDebug() << "IncDecWheelActionWidget::updateSize()" << action->labelTemplate << ", mainSz w =" << mainSz;
+
+    opt.menuHasCheckableItems = false;
+    opt.maxIconWidth = 0;
 
     opt.text = action->incText;
     QSize plusSz = sizeForMenuItem(&opt);
+    qDebug() << "IncDecWheelActionWidget::updateSize()" << action->labelTemplate << ", plusSz =" << plusSz;
 
     opt.text = action->decText;
     QSize minusSz = sizeForMenuItem(&opt);
+    qDebug() << "IncDecWheelActionWidget::updateSize()" << action->labelTemplate << ", minusSz =" << minusSz;
 
-    mainTextRect = QRect(0, 0, mainSz.width(), mainSz.height());
-    minusRect = QRect(width()-minusSz.width(), 0, minusSz.width(), minusSz.height());
-    plusRect = QRect(minusRect.left()-plusSz.width(), 0, plusSz.width(), plusSz.height());
-    if (mainTextRect.right()<plusRect.left())
-        mainTextRect.setRight(plusRect.left());
+    int maxIncDecW = qMax(plusSz.width(), minusSz.width());
+    plusSz.setWidth(maxIncDecW);
+    minusSz.setWidth(maxIncDecW);
 
     setMinimumSize(mainSz.width()+minusSz.width()+plusSz.width(), mainSz.height());
+
+    plusRect   = QRect(rect().bottomRight() - QPoint(plusSz.width()-1, plusSz.height()-1),
+                     rect().bottomRight());
+    minusRect  = QRect(plusRect.topLeft() - QPoint(minusSz.width(), 0),
+                      plusRect.bottomLeft());
+    mainTextRect = QRect(rect().topLeft(),
+                         minusRect.bottomLeft() - QPoint(1, 0));
 }
 
 void IncDecWheelActionWidget::resizeEvent(QResizeEvent *event)
 {
+    updateSize();
+}
+
+void IncDecWheelActionWidget::updateMenuContext()
+{
+    if (!parent()->inherits("QMenu"))
+        return;
+
+    QStyleOption opt;
+    opt.initFrom(this);
+
+    const int icone = style()->pixelMetric(QStyle::PM_SmallIconSize, &opt, this);
+
+    QMenu *w = static_cast<QMenu*>(parent());
+    for (const auto &action : w->actions())
+    {
+        if (action->isSeparator() || !action->isVisible())
+            continue;
+        menuHasCheckableItems |= action->isCheckable();
+        QIcon is = action->icon();
+        if (!is.isNull()) {
+            maxIconWidth = qMax<uint>(maxIconWidth, icone + 4);
+        }
+    }
     updateSize();
 }
 
@@ -189,6 +224,10 @@ QSize IncDecWheelActionWidget::sizeForMenuItem(QStyleOptionMenuItem *opt)
 
 void IncDecWheelActionWidget::enterEvent(QEnterEvent *event)
 {
+    // Workaround for Qt's incorrect QActionWidget focus handling
+    if (QMenu *menu = qobject_cast<QMenu*>(parentWidget())) {
+        menu->setActiveAction(action);
+    }
     update();
 }
 
@@ -202,31 +241,48 @@ void IncDecWheelActionWidget::paintEvent(QPaintEvent *event)
 {
     QStylePainter p(this);
 
-    QStyleOptionMenuItem option;
-    initStyleOption(&option);
+    QStyleOptionMenuItem opt;
+    initStyleOption(&opt);
 
-    option.text = action->mainText;
-    option.rect = mainTextRect;
+    opt.text = action->mainText;
+    opt.rect = mainTextRect;
     if (!mousePos.isNull() && mainTextRect.contains(mousePos)) {
-        option.state |= QStyle::State_Selected;
+        opt.state |= QStyle::State_Selected;
     }
-    p.drawControl(QStyle::CE_MenuItem, option);
+    p.drawControl(QStyle::CE_MenuItem, opt);
 
-    initStyleOption(&option);
-    option.text = action->incText;
-    option.rect = plusRect;
+    opt.state &= ~QStyle::State_Selected;
+    opt.menuHasCheckableItems = false;
+    opt.maxIconWidth = 0;
+    opt.text = "";
+
+    opt.rect = plusRect;
+    opt.state &= ~QStyle::State_Selected;
     if (!mousePos.isNull() && plusRect.contains(mousePos)) {
-        option.state |= QStyle::State_Selected;
+        opt.state |= QStyle::State_Selected;
     }
-    p.drawControl(QStyle::CE_MenuItem, option);
+    p.drawControl(QStyle::CE_MenuItem, opt);
+    p.drawItemText(
+        opt.rect,
+        Qt::AlignCenter,
+        opt.palette,
+        opt.state & QStyle::State_Enabled,
+        action->incText
+        );
 
-    initStyleOption(&option);
-    option.text = action->decText;
-    option.rect = minusRect;
+    opt.rect = minusRect;
+    opt.state &= ~QStyle::State_Selected;
     if (!mousePos.isNull() && minusRect.contains(mousePos)) {
-        option.state |= QStyle::State_Selected;
+        opt.state |= QStyle::State_Selected;
     }
-    p.drawControl(QStyle::CE_MenuItem, option);
+    p.drawControl(QStyle::CE_MenuItem, opt);
+    p.drawItemText(
+        opt.rect,
+        Qt::AlignCenter,
+        opt.palette,
+        opt.state & QStyle::State_Enabled,
+        action->decText
+        );
 }
 
 void IncDecWheelActionWidget::initStyleOption(QStyleOptionMenuItem *opt)
@@ -247,7 +303,9 @@ void IncDecWheelActionWidget::initStyleOption(QStyleOptionMenuItem *opt)
     opt->fontMetrics = QFontMetrics(opt->font);
 
     opt->checkType = QStyleOptionMenuItem::NotCheckable;
-    opt->menuHasCheckableItems = false; // TODO: d->hasCheckableItems;
+
+    opt->menuHasCheckableItems = menuHasCheckableItems;
+    opt->maxIconWidth = maxIconWidth;
 
     //if (action->isIconVisibleInMenu())
     //    opt->icon = action->icon();
