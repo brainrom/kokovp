@@ -22,10 +22,13 @@
 
 #include <QString>
 
+class QIODevice;
+
 class FileHash
 {
 public:
-	static QString calculateHash(QString filename);
+    static QString calculateHash(QString filename);
+    static QString calculateHashSHA256(QIODevice *device, const QByteArray &salt);
 };
 
 #endif

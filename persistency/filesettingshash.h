@@ -37,8 +37,11 @@ public:
 private:
     void updateCurrentProps(QVariant value);
     QString configFile(const QString & filename);
+    QString configFileSHA256(const QString & filename);
+    QByteArray loadOrCreateSalt();
 
     PlayerController *p_player;
+    QByteArray salt;
 
     QString base_dir;
     QString currentFile;

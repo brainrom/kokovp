@@ -20,6 +20,7 @@
 #include "filehash.h"
 #include <QFile>
 #include <QDataStream>
+#include <QCryptographicHash>
 
 // From the patch by Kamil Dziobek turbos11(at)gmail.com
 // (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
@@ -50,3 +51,26 @@ QString FileHash::calculateHash(QString filename) {
 	return hexhash;
 }
 
+QString FileHash::calculateHashSHA256(QIODevice *device, const QByteArray &salt)
+{
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+
+    hash.addData(salt);
+
+    qint64 size = device->size();
+    QByteArray sizeBytes;
+    QDataStream ds(&sizeBytes, QIODevice::WriteOnly);
+    ds.setByteOrder(QDataStream::LittleEndian);
+    ds << size;
+    hash.addData(sizeBytes);
+
+    device->seek(0);
+    hash.addData(device->read(8192));
+
+    if (size > 8192) {
+        device->seek(qMax<qint64>(0, size - 8192));
+        hash.addData(device->read(8192));
+    }
+
+    return hash.result().toHex(); // 64 hex chars
+}

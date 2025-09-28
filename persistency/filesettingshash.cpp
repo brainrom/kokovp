@@ -26,16 +26,18 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
+#include <QRandomGenerator>
 
 FileSettingsHash::FileSettingsHash(QString directory,  PlayerController *player, QObject *parent): QObject{parent}, p_player{player}
 {
-	base_dir = directory + "/file_settings";
+    base_dir = directory + "/file_settings";
     persistentProps = { "volume", "aid", "vid", "secondary-sid", "sid", "sub-scale", "sub-pos", "sub-delay", "audio-delay" };
 
     for (auto &p : persistentProps)
         connect(p_player->prop(p), &PropertyObserver::changed, this, &FileSettingsHash::updateCurrentProps);
 
     connect(p_player->prop("time-pos"), &PropertyObserver::changed, this, &FileSettingsHash::updateCurrentProps);
+    salt = loadOrCreateSalt();
 }
 
 QString FileSettingsHash::configFile(const QString & filename) {
@@ -45,32 +47,66 @@ QString FileSettingsHash::configFile(const QString & filename) {
     return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
 }
 
+QString FileSettingsHash::configFileSHA256(const QString & filename) {
+    QFile file(filename);
+
+    if (!file.exists()) {
+        qWarning("FileSettingsHash:configFileSHA256: error hashing file. File doesn't exist.");
+        return QString();
+    }
+    file.open(QIODevice::ReadOnly);
+
+    QString hash = FileHash::calculateHashSHA256(&file, salt);
+    if (hash.isEmpty())
+        return QString();
+    return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
+}
+
+QByteArray FileSettingsHash::loadOrCreateSalt()
+{
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "KokoVP", "salt");
+
+    QByteArray salt = settings.value("salt").toByteArray();
+    if (salt.size() == 16)
+        return salt;
+
+    salt.resize(16);
+    QRandomGenerator::global()->generate(salt.begin(), salt.end());
+    settings.setValue("salt", salt);
+    settings.sync();
+    return salt;
+}
+
 bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
-    QString config_file = configFile(filename);
+    QString config_file = configFileSHA256(filename);
     if (!QFile::exists(config_file))
+    {
+        QString config_file_old = configFile(filename);
+        if (!QFile::exists(config_file_old))
+            return false;
+        QFile::rename(config_file_old, config_file);
+    }
+
+    if (config_file.isEmpty())
         return false;
 
-    if ((!config_file.isEmpty()) && (QFile::exists(config_file)))
-    {
-        QSettings settings(config_file, QSettings::IniFormat);
+    QSettings settings(config_file, QSettings::IniFormat);
 
-        settings.beginGroup("props");
-        for (auto &p : persistentProps)
-            p_player->prop(p)->set(settings.value(p));
+    settings.beginGroup("props");
+    for (auto &p : persistentProps)
+        p_player->prop(p)->set(settings.value(p));
 
-        if (loadTimepos)
-            p_player->seekAbsolute(settings.value("time-pos").toDouble());
-        settings.endGroup();
-        return true;
-    }
-    return false;
+    if (loadTimepos)
+        p_player->seekAbsolute(settings.value("time-pos").toDouble());
+    settings.endGroup();
+    return true;
 }
 
 bool FileSettingsHash::saveSettingsFor(QString filename, bool saveTimepos) {
     if (filename.isEmpty())
         return false;
 
-    QString config_file = configFile(filename);
+    QString config_file = configFileSHA256(filename);
     QString output_dir = QFileInfo(config_file).absolutePath();
 
     if (config_file.isEmpty())
