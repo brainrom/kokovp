@@ -27,6 +27,7 @@
 #include <QToolBar>
 #include <QStandardPaths>
 #include <QStyle>
+#include <QClipboard>
 
 #include "autohidewidget.h"
 
@@ -303,6 +304,9 @@ void KokoVP::populateMenu()
     subTracksMenu->setRewriteRule(extfolderRewriteRule);
     secondSubTracksMenu = bindTracksMenu(QIcon::fromTheme("media-view-subtitles"), tr("Secondary track"), "secondary-sid", subtitlesMenu);
     subtitlesMenu->addSeparator();
+
+    ActionWrapper *subCopyAct = new ActionWrapper(tr("Copy subtitle content"), QKeySequence("Ctrl+C"), subtitlesMenu, "sub_copy", QIcon::fromTheme("clipboard"));
+    connect(subCopyAct, &QAction::triggered, this, [this]{ QGuiApplication::clipboard()->setText(player->getProp("sub-text").toString()); });
 
     IncDecWheelAction *subDelayActions = new IncDecWheelAction(tr("Delay"), tr("Subtitle delay %1"), "sub_delay", subtitlesMenu);
     subDelayActions->setDelta(Config::i().get("steps/sub_delay_acts", 0.1).toDouble());
