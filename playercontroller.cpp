@@ -57,16 +57,19 @@ void PlayerController::handleFileEnd()
     if (!queuedFile.isEmpty())
     {
         QUrl f = queuedFile;
+        QMap<QString, QVariant> opts =  queuedFileOptions;
         queuedFile = QUrl();
-        open(f);
+        queuedFileOptions = QMap<QString, QVariant>();
+        open(f, opts);
     }
 }
 
-void PlayerController::open(const QUrl &file)
+void PlayerController::open(const QUrl &file, const QMap<QString, QVariant> &fileOptions)
 {
     if (haveFile)
     {
         queuedFile = file;
+        queuedFileOptions = fileOptions;
         return stop();
     }
     p_tracks.clear();
@@ -77,23 +80,33 @@ void PlayerController::open(const QUrl &file)
     {
         QDir mediaDir = QFileInfo(file.toLocalFile()).absoluteDir();
 
+        p->setOption("sub-auto", p_extSubMode);
         if (p_extSubMaxDepth>=0 && p_extSubMode!="no")
         {
             QStringList subsFolders;
             Helper::searchWithMaxDepth(subsFolders, Extensions.subtitles().forDirFilter(), mediaDir, p_extSubMaxDepth, false);
-            p->setOption("sub-auto", p_extSubMode);
             p->setOption("sub-file-paths", subsFolders);
         }
+        else
+        {
+            p->setOption("sub-file-paths", {});
+        }
 
+        p->setOption("audio-file-auto", p_extAudioMode);
         if (p_extAudioMaxDepth>=0 && p_extAudioMode!="no")
         {
             QStringList audioFolders;
             Helper::searchWithMaxDepth(audioFolders, Extensions.audio().forDirFilter(), mediaDir, p_extAudioMaxDepth, false);
-            p->setOption("audio-file-auto", p_extAudioMode);
             p->setOption("audio-file-paths", audioFolders);
         }
+        else
+        {
+            p->setOption("audio-file-paths", {});
+        }
+        for (auto [key, value] : fileOptions.asKeyValueRange()) {
+            p->setOption(key,value);
+        }
     }
-
     p->command(QStringList{"loadfile", file.path()});
 }
 

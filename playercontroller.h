@@ -58,7 +58,7 @@ public:
     void setExtSubOptions(QString mode, int depth) { p_extSubMode = mode; p_extSubMaxDepth = depth; }
     void setExtAudioOptions(QString mode, int depth) { p_extAudioMode = mode; p_extAudioMaxDepth = depth; }
 
-    void open(const QUrl &file);
+    void open(const QUrl &file, const QMap<QString, QVariant> &fileOptions = {});
     void stop();
 
     void togglePlayback();
@@ -99,6 +99,8 @@ private:
     QList<Track> p_tracks;
 
     QUrl queuedFile;
+    QMap<QString, QVariant> queuedFileOptions;
+
     QString lastFile;
     bool haveFile = false;
 };
