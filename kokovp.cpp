@@ -74,7 +74,7 @@ KokoVP::KokoVP(QWidget *parent)
 
     playerWidget = new PlayerWidget(this);
     player = new PlayerController(playerWidget);
-    pref = new PrefDialog();
+    pref = new PrefDialog(this);
     connect(pref, &PrefDialog::applied, this, &KokoVP::readConfig);
     fileSettings = new FileSettingsHash(QStandardPaths::writableLocation(QStandardPaths::CacheLocation), player, this);
 
