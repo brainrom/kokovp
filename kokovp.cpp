@@ -431,6 +431,7 @@ void KokoVP::readConfig()
     player->setOption("alang", Config::i().get("tracks/alang").toStringList());
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
 
+    autoHide->setHideDelay(Config::i().get(PrefAppearance::floatPanelTimeoutConfigKey, 3000).toInt());
 
     static QString startUiTheme = qApp->style()->name(); // This executes only once at start
     QString uiTheme = Config::i().get(PrefAppearance::uiThemeConfigKey, QString()).toString();

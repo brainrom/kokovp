@@ -33,6 +33,7 @@ class PrefAppearance : public PrefSection
     ~PrefAppearance();
     static const QString uiThemeConfigKey;
     static const QString iconThemeConfigKey;
+    static const QString floatPanelTimeoutConfigKey;
     void load() override;
     void save() override;
 

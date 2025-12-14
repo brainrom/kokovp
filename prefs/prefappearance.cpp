@@ -24,6 +24,7 @@
 
 const QString PrefAppearance::uiThemeConfigKey = QString("appearance/ui_theme");
 const QString PrefAppearance::iconThemeConfigKey = QString("appearance/icon_theme");
+const QString PrefAppearance::floatPanelTimeoutConfigKey = QString("appearance/float_panel_timeout");
 
 PrefAppearance::PrefAppearance(QWidget *parent)
     : PrefSection(parent), ui(new Ui::PrefAppearance)
@@ -60,10 +61,13 @@ void PrefAppearance::load()
     int iconThemeNum = ui->cbIconTheme->findData(Config::i().get(iconThemeConfigKey));
     if (iconThemeNum >= 0)
         ui->cbIconTheme->setCurrentIndex(iconThemeNum);
+
+    ui->sbFloatingPanelTimeout->setValue(Config::i().get(floatPanelTimeoutConfigKey).toInt());
 }
 
 void PrefAppearance::save()
 {
     Config::i().set(uiThemeConfigKey, ui->cbUiTheme->currentData().toString());
     Config::i().set(iconThemeConfigKey, ui->cbIconTheme->currentData().toString());
+    Config::i().set(floatPanelTimeoutConfigKey, ui->sbFloatingPanelTimeout->value());
 }
