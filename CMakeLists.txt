@@ -60,11 +60,13 @@ qt_wrap_cpp(MOC_FILES
     prefs/prefsection.h
     prefs/prefmain.h
     prefs/prefinput.h
-    prefs/qactionlistmodel.h
-    prefs/shortcuteditordelegate.h
     prefs/prefscreenshots.h
     prefs/prefextfile.h
+    prefs/prefadvanced.h
     prefs/seekwidget.h
+
+    prefs/qactionlistmodel.h
+    prefs/shortcuteditordelegate.h
 
     persistency/filesettingshash.h # From SMPlayer
 )
@@ -106,6 +108,7 @@ set(MAIN_SRC
     prefs/shortcuteditordelegate.cpp
     prefs/prefscreenshots.cpp
     prefs/prefextfile.cpp
+    prefs/prefadvanced.cpp
     prefs/seekwidget.cpp
 
     persistency/filehash.cpp # From SMPlayer
@@ -118,6 +121,7 @@ set(UI
     prefs/prefinput.ui
     prefs/prefscreenshots.ui
     prefs/prefextfile.ui
+    prefs/prefadvanced.ui
 )
 
 qt_wrap_ui(FORMS ${UI})
