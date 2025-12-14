@@ -519,7 +519,7 @@ void KokoVP::handleTracks()
     }
 
     if (Config::i().get("play_mode/keep_props", true).toBool())
-        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool());
+        fileSettings->loadSettingsFor(player->currentFile(), Config::i().get("play_mode/keep_timepos", true).toBool(), !Config::i().get("play_mode/global_volume", false).toBool());
 
     player->setProp("pause", false);
 }

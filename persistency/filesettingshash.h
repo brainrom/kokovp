@@ -32,7 +32,7 @@ class FileSettingsHash : public QObject
     Q_OBJECT
 public:
     FileSettingsHash(QString directory, PlayerController *player, QObject *parent = nullptr);
-    bool loadSettingsFor(QString filename, bool loadTimepos = true);
+    bool loadSettingsFor(QString filename, bool loadTimepos = true, bool loadVolume = true);
     bool saveSettingsFor(QString filename, bool saveTimepos = true);
     QStringList loadExtFilesList(QString filename);
     void saveExtFilesList(QString filename, const QStringList &extFilesList);

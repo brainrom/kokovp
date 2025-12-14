@@ -95,7 +95,7 @@ bool FileSettingsHash::settingsFor(QString filename, QString &path)
     return true;
 }
 
-bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
+bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos, bool loadVolume) {
     QString config_file;
     if (!settingsFor(filename, config_file))
         return false;
@@ -103,14 +103,17 @@ bool FileSettingsHash::loadSettingsFor(QString filename, bool loadTimepos) {
     QSettings settings(config_file, QSettings::IniFormat);
     settings.beginGroup("props");
     for (auto &p : persistentProps)
+    {
+        if (p=="volume" and !loadVolume)
+            continue;
         p_player->prop(p)->set(settings.value(p));
+    }
 
     if (loadTimepos)
         p_player->seekAbsolute(settings.value("time-pos").toDouble());
     settings.endGroup();
     return true;
 }
-
 
 QStringList FileSettingsHash::loadExtFilesList(QString filename)
 {

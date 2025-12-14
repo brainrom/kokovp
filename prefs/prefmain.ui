@@ -35,7 +35,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabPlayback">
       <attribute name="title">
@@ -60,6 +60,13 @@
         <widget class="QCheckBox" name="cbRememberTimePos">
          <property name="text">
           <string>Remember time position</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cbGlobalVolume">
+         <property name="text">
+          <string>Global volume</string>
          </property>
         </widget>
        </item>
@@ -294,8 +301,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../icons/res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
