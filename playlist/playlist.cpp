@@ -40,7 +40,7 @@
 
 class PlaylistDelegate : public QStyledItemDelegate {
 public:
-    PlaylistDelegate(QObject * parent = 0) : QStyledItemDelegate(parent) {};
+    PlaylistDelegate(QObject * parent = 0) : QStyledItemDelegate(parent) {}
     virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
         QStyleOptionViewItem opt = option;
         initStyleOption(&opt, index);
@@ -59,19 +59,12 @@ public:
 
 Playlist::Playlist(QWidget *parent)
     : QWidget{parent},
-    loadFuncs
+      codecFuncs
     {
-        {"pls", PLSCodec::load},
-        {"xspf", XSPFCodec::load},
-        {"m3u", M3UCodec::load},
-        {"m3u8", M3UCodec::load},
-    },
-    saveFuncs
-    {
-        {"pls", PLSCodec::save},
-        {"xspf", XSPFCodec::save},
-        {"m3u", M3UCodec::save},
-        {"m3u8", M3UCodec::save},
+        {"pls",  { PLSCodec::load, PLSCodec::save }},
+        {"xspf", { XSPFCodec::load, XSPFCodec::save }},
+        {"m3u", { M3UCodec::load, M3UCodec::save }},
+        {"m3u8", { M3UCodec::load, M3UCodec::save }},
     }
 {
     setWindowTitle(tr("Playlist"));
@@ -257,7 +250,7 @@ void Playlist::loadPlaylist()
         Cache::i().set("file_open/last_file_dir", QFileInfo(s).absolutePath());
 
         QString suffix = QFileInfo(s).suffix().toLower();
-        auto f = loadFuncs.value(suffix);
+        auto f = codecFuncs.value(suffix).first;
 
         if (!f)
             return;
@@ -298,7 +291,7 @@ bool Playlist::savePlaylist(QString s)
     Cache::i().set("file_open/last_file_dir", QFileInfo(s).absolutePath());
 
     QString suffix = QFileInfo(s).suffix().toLower();
-    auto f = saveFuncs.value(suffix);
+    auto f = codecFuncs.value(suffix).second;
     if (!f)
         return false;
 

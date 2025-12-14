@@ -48,8 +48,7 @@ signals:
 private:
     typedef const QList<PlaylistItem> (*LoadPlaylistFunc)(const QString &file);
     typedef bool (*SavePlaylistFunc)(const QString &file, const QList<PlaylistItem> &list);
-    QMap<QString, LoadPlaylistFunc> loadFuncs;
-    QMap<QString, SavePlaylistFunc> saveFuncs;
+    QMap<QString, QPair<LoadPlaylistFunc, SavePlaylistFunc>> codecFuncs;
 
     QTableView *plView;
     PlaylistModel *plModel;
