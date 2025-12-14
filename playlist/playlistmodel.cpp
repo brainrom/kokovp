@@ -93,7 +93,7 @@ QVariant PlaylistModel::data(const QModelIndex &index, int role) const
 QStringList PlaylistModel::mimeTypes() const
 {
     QStringList types;
-    types << "application/x-kokovpplaylistelement" << "text/uri-list";
+    types << "application/x-kokovp-playlist-element" << "text/uri-list";
     return types;
 }
 
@@ -111,11 +111,11 @@ QMimeData *PlaylistModel::mimeData(const QModelIndexList &indexes) const
             int row = index.row();
             bool isCurrent = (row==current.row());
             rows.append(row);
-            stream << row << values.at(row) << isCurrent;
+            stream << values.at(row) << isCurrent;
         }
     }
 
-    mimeData->setData("application/x-kokovpplaylistelement", encodedData);
+    mimeData->setData("application/x-kokovp-playlist-element", encodedData);
     return mimeData;
 }
 
@@ -135,7 +135,7 @@ bool PlaylistModel::canDropMimeData(const QMimeData *data, Qt::DropAction action
         return true;
     }
 
-    if (data->hasFormat("application/x-kokovpplaylistelement"))
+    if (data->hasFormat("application/x-kokovp-playlist-element"))
         return true;
 
     return false;
@@ -156,18 +156,15 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
     else if (parent.isValid())
         beginRow = parent.row();
     else
-        beginRow = rowCount(QModelIndex());
-
+        beginRow = rowCount();
 
     QList<QUrl> urls = data->urls();
     if (urls.count()>0)
         return addURLs(urls, beginRow);
 
-    QByteArray encodedData = data->data("application/x-kokovpplaylistelement");
+    QByteArray encodedData = data->data("application/x-kokovp-playlist-element");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
-    QList<QPersistentModelIndex> removeRows;
     QList<PlaylistItem> movingItems;
-    QPersistentModelIndex beforeRow = index(beginRow, 0);
 
     int relCurrent = -1;
     int relCurrentCnt = 0;
@@ -176,27 +173,18 @@ bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
         int row;
         PlaylistItem item;
         bool isCurrent;
-        stream >> row >> item >> isCurrent;
+        stream >> item >> isCurrent;
         if (isCurrent)
             relCurrent = relCurrentCnt;
         relCurrentCnt++;
-        removeRows.append(index(row,0));
         movingItems.append(item);
     }
 
-    for (auto &rRow : removeRows)
-        removeRow(rRow.row());
-
-    // Because removeRow calls invalidates beginRow we need to save it via QPersistentModelIndex
     if (movingItems.count()>0)
     {
-        int row = beforeRow.row();
-        if (row<0 || row > rowCount(QModelIndex()))
-            row = rowCount();
-
-        bool res = addItems(movingItems, row);
+        bool res = addItems(movingItems, beginRow);
         if (relCurrent>=0)
-            setRowCurrent(row+relCurrent);
+            setRowCurrent(beginRow+relCurrent);
         return res;
     }
 
