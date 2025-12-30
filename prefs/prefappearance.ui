@@ -46,7 +46,7 @@
      <property name="tabsClosable">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tabAppearance">
+     <widget class="QWidget" name="tabAppearance_layout">
       <property name="locale">
        <locale language="English" country="UnitedKingdom"/>
       </property>
