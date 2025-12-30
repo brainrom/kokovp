@@ -28,11 +28,17 @@ QString FileHash::calculateHash(QString filename) {
 	QFile file(filename);
 
 	if (!file.exists()) {
-		qWarning("OSParser:calculateHash: error hashing file. File doesn't exist.");
+                qWarning("FileHash::calculateHash: error hashing file. File doesn't exist.");
 		return QString();
 	}
 
-	file.open(QIODevice::ReadOnly);
+        bool isOpen = file.open(QIODevice::ReadOnly);
+        if (!isOpen)
+        {
+            qWarning("FileHash::calculateHash: error hashing file. Couldn't open file.");
+            return QString();
+        }
+
 	QDataStream in(&file);
 	in.setByteOrder(QDataStream::LittleEndian);
 	quint64 size=file.size ();

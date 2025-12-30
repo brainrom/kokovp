@@ -54,7 +54,12 @@ QString FileSettingsHash::configFileSHA256(const QString & filename) {
         qWarning("FileSettingsHash:configFileSHA256: error hashing file. File doesn't exist.");
         return QString();
     }
-    file.open(QIODevice::ReadOnly);
+    bool isOpen = file.open(QIODevice::ReadOnly);
+    if (!isOpen)
+    {
+        qWarning("FileSettingsHash:configFileSHA256: error hashing file. Couldn't open file.");
+        return QString();
+    }
 
     QString hash = FileHash::calculateHashSHA256(&file, salt);
     if (hash.isEmpty())
