@@ -22,6 +22,7 @@
 #include "prefinput.h"
 #include "prefmain.h"
 #include "prefscreenshots.h"
+#include "prefadvanced.h"
 #include "config.h"
 
 #include <QVBoxLayout>
@@ -75,6 +76,7 @@ PrefDialog::PrefDialog(QWidget * parent, Qt::WindowFlags f)
     addSection(new PrefExtFile(this));
     addSection(new PrefScreenshots(this));
     addSection(new PrefAppearance(this));
+    addSection(new PrefAdvanced(this));
 }
 
 void PrefDialog::accept() {

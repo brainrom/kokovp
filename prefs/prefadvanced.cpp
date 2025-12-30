@@ -15,12 +15,22 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "prefadvanced.h"
+#include "optionsmodel.h"
 #include "ui_prefadvanced.h"
 
 PrefAdvanced::PrefAdvanced(QWidget *parent) : PrefSection(parent),
                                               ui(new Ui::PrefAdvanced)
 {
     ui->setupUi(this);
+    optsModel = new OptionsModel(this);
+    ui->twMpvOptions->setModel(optsModel);
+
+    ui->twMpvOptions->setDragDropMode(QAbstractItemView::DragDrop);
+    ui->twMpvOptions->setSelectionBehavior(QHeaderView::SelectRows);
+    ui->twMpvOptions->setDefaultDropAction(Qt::MoveAction);
+    ui->twMpvOptions->setDropIndicatorShown(true);
+    ui->twMpvOptions->setDragDropOverwriteMode(false);
+    ui->twMpvOptions->setShowGrid(false);
 }
 
 PrefAdvanced::~PrefAdvanced()

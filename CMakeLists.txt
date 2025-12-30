@@ -65,6 +65,7 @@ qt_wrap_cpp(MOC_FILES
     prefs/prefadvanced.h
     prefs/seekwidget.h
 
+    optionsmodel.h
     prefs/qactionlistmodel.h
     prefs/shortcuteditordelegate.h
 
@@ -84,6 +85,8 @@ set(MAIN_SRC
     cache.cpp
     extensions.cpp # From SMPlayer
     singleinstance.cpp
+
+    optionsmodel.cpp
 
     playlist/playlistmodel.cpp
     playlist/playlist.cpp

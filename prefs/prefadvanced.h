@@ -24,6 +24,8 @@ namespace Ui
 class PrefAdvanced;
 }
 
+class OptionsModel;
+
 class PrefAdvanced : public PrefSection
 {
     Q_OBJECT
@@ -34,6 +36,7 @@ class PrefAdvanced : public PrefSection
 
   private:
     Ui::PrefAdvanced *ui;
+    OptionsModel *optsModel = nullptr;
 };
 
 #endif // PREFADVANCED_H
