@@ -69,9 +69,9 @@ QWidget *TimeSliderAction::createWidget(QWidget *parent) {
     t->setEnabled(isEnabled());
     t->setWheelDelta(wheelDelta);
 
-    connect(t, &TimeSlider::timeChanged, this, &TimeSliderAction::onTimeChanged);
-    connect(t, &TimeSlider::draggingTime, this, &TimeSliderAction::onDraggingTime);
+    connect(t, &TimeSlider::timeChanged, this, &TimeSliderAction::timeChanged);
     connect(t, &TimeSlider::draggingTime, this, &TimeSliderAction::draggingTime);
+    connect(t, &TimeSlider::draggingTime, this, &TimeSliderAction::onDraggingTime);
 
     return t;
 }
@@ -79,12 +79,6 @@ QWidget *TimeSliderAction::createWidget(QWidget *parent) {
 void TimeSliderAction::setChangeTimeOnDrag(bool on)
 {
     changeTimeOnDrag = on;
-}
-
-void TimeSliderAction::onTimeChanged(double value)
-{
-    if (!changeTimeOnDrag)
-        emit timeChanged(value);
 }
 
 void TimeSliderAction::onDraggingTime(double value)

@@ -56,6 +56,10 @@ void TimeSlider::valueChanged_slot(int v) {
     if (dragging) {
         emit draggingTime(time());
     }
+    else
+    {
+        emit timeChanged( time() );
+    }
 }
 
 void TimeSlider::setTime(double s) {

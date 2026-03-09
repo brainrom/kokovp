@@ -39,7 +39,6 @@ private:
     double totalTime;
     double wheelDelta;
     QWidget *createWidget (QWidget * parent) override;
-    void onTimeChanged(double value);
     void onDraggingTime(double value);
 
 signals:
