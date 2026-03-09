@@ -208,7 +208,7 @@ void PlayerController::handleFileLoad()
             QFileInfo fI(t.filename);
             // mpv after 57210df returns complete sufix as fallback title instead of basename.
             // Clean it early so rewrite rule can rely on empty title as a condition to rewrite
-            if (fI.fileName()==t.title || fI.completeSuffix()==t.title)
+            if (fI.fileName()==t.title || fI.suffix()==t.title)
                 t.title = QString();
         }
 
