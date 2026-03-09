@@ -33,6 +33,8 @@ PlayerWidget::PlayerWidget(QWidget *parent, Qt::WindowFlags f) : MpvWidget{paren
     wheelUpAct = nullptr;
     wheelDownAct = nullptr;
 
+    setMinimumSize(320, 180);
+
     mouseMoveTimer = new QTimer(this);
     mouseMoveTimer->setInterval(3000);
     mouseMoveTimer->setSingleShot(true);
