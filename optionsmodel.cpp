@@ -156,7 +156,7 @@ bool OptionsModel::addItems(const QList<OptionItem> &items, int row)
 void OptionsModel::addEmptyRow()
 {
     beginInsertRows(QModelIndex(), values.size(), values.size());
-    values.push_back({});
+    values.push_back({.enabled = true});
     endInsertRows();
 }
 
@@ -243,6 +243,14 @@ bool OptionsModel::removeRows(int row, int count, const QModelIndex &parent)
     Q_UNUSED(parent);
 
     if (row < 0 || row >= values.size()-1)
+        return false;
+
+    if (row+count >= values.size())
+    {
+        count = values.size()-1;
+    }
+
+    if (count==0)
         return false;
 
     beginRemoveRows(QModelIndex(), row, row+count-1);
