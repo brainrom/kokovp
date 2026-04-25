@@ -25,18 +25,33 @@ class PrefAdvanced;
 }
 
 class OptionsModel;
+class QAbstractItemModel;
+class QTableView;
 
 class PrefAdvanced : public PrefSection
 {
     Q_OBJECT
-
   public:
     explicit PrefAdvanced(QWidget *parent = nullptr);
     ~PrefAdvanced();
+    void load();
+    void save();
 
-  private:
+    static const QString optionTableConfigKey;
+    static const QString shadersListConfigKey;
+    static const QString shadersEnableConfigKey;
+private:
     Ui::PrefAdvanced *ui;
     OptionsModel *optsModel = nullptr;
+    OptionsModel *shadersModel = nullptr;
+
+    QTableView *currentView();
+
+    void importTable();
+    void exportTable();
+
+    void importTableModel(QAbstractItemModel *model, QString data);
+    const QString exportTableModel(QAbstractItemModel *model);
 };
 
 #endif // PREFADVANCED_H

@@ -70,6 +70,9 @@ qt_wrap_cpp(MOC_FILES
     prefs/shortcuteditordelegate.h
 
     persistency/filesettingshash.h # From SMPlayer
+
+    utils/checkboxdelegate.h
+    utils/manipulationtableview.h
 )
 
 set(MAIN_SRC
@@ -116,6 +119,9 @@ set(MAIN_SRC
 
     persistency/filehash.cpp # From SMPlayer
     persistency/filesettingshash.cpp # From SMPlayer
+
+    utils/checkboxdelegate.cpp
+    utils/manipulationtableview.cpp
 )
 
 set(UI

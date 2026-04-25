@@ -46,6 +46,9 @@
 
 #include "prefs/prefdialog.h"
 #include "prefs/prefappearance.h"
+#include "prefs/prefadvanced.h"
+#include "optionsmodel.h"
+
 #include "persistency/filesettingshash.h"
 
 // TODO: maybe move to some class. Anyway it must be static
@@ -419,17 +422,33 @@ void KokoVP::readConfig()
     player->setProp("audio-device", Config::i().get("misc/audio_device", "auto").toString());
     player->setOption("hwdec", Config::i().get("misc/hwdec", "auto").toString());
 
-    // TODO: for SVP testing, should be handled separately
-    player->setProp("input-ipc-server", "/tmp/mpvsocket");
-    player->setProp("hr-seek-framedrop", false);
-
-    if (Config::i().get("misc/glsl_enable", false).toBool())
-        player->setProp("glsl-shaders", Config::i().get("misc/glsl").toStringList());
-    else
-        player->setProp("glsl-shaders", QStringList{});
-
     player->setOption("alang", Config::i().get("tracks/alang").toStringList());
     player->setOption("slang", Config::i().get("tracks/slang").toStringList());
+
+    QList<OptionsModel::OptionItem> config = OptionsModel::parseText(Config::i().get(PrefAdvanced::optionTableConfigKey, "").toString());
+    for (auto &kv: config)
+    {
+        if (!kv.enabled)
+            continue;
+        player->setOption(kv.name, kv.value);
+    }
+
+    if (Config::i().get(PrefAdvanced::shadersEnableConfigKey, false).toBool())
+    {
+        QList<OptionsModel::OptionItem> shaders = OptionsModel::parseText(Config::i().get(PrefAdvanced::shadersListConfigKey, "").toString());
+        QStringList shadersPathList{};
+        for (auto &kv: shaders)
+        {
+            if (!kv.enabled)
+                continue;
+            shadersPathList.append(kv.name);
+        }
+        player->setProp("glsl-shaders", shadersPathList);
+    }
+    else
+    {
+        player->setProp("glsl-shaders", QStringList{});
+    }
 
     autoHide->setHideDelay(Config::i().get(PrefAppearance::floatPanelTimeoutConfigKey, 3000).toInt());
 

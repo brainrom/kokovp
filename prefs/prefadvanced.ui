@@ -6,17 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>894</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Advanced</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
+  <layout class="QGridLayout" name="gridLayout_3">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -29,8 +26,11 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item>
-    <widget class="QTabWidget" name="tabWidget">
+   <property name="spacing">
+    <number>6</number>
+   </property>
+   <item row="0" column="0" colspan="2">
+    <widget class="QTabWidget" name="tabs">
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -39,50 +39,69 @@
        <string>MPV options</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <property name="spacing">
+       <property name="leftMargin">
         <number>3</number>
        </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item row="1" column="0">
-        <widget class="QPushButton" name="pbImportOptions">
+        <widget class="ManipulationTableView" name="twOptions"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
-          <string>Import</string>
+          <string>Direct manipulation of mpv properties can lead to unexpected behavior! Use with caution!</string>
          </property>
         </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="pbExportOptions">
-         <property name="text">
-          <string>Export</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QTableView" name="twMpvOptions"/>
        </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Shaders</string>
+       <string>GLSL Shaders</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <property name="spacing">
+       <property name="leftMargin">
         <number>3</number>
        </property>
-       <item row="0" column="0" colspan="2">
-        <widget class="QTableView" name="twMpvOptions_2"/>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>3</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>0</number>
+       </property>
+       <item row="1" column="0" colspan="2">
+        <widget class="ManipulationTableView" name="twShaders"/>
        </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton_3">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="cbEnableShaders">
          <property name="text">
-          <string>Import</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="text">
-          <string>Export</string>
+          <string>Enable</string>
          </property>
         </widget>
        </item>
@@ -90,8 +109,29 @@
      </widget>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pbImport">
+     <property name="text">
+      <string>Import</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pbExport">
+     <property name="text">
+      <string>Export</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ManipulationTableView</class>
+   <extends>QTableView</extends>
+   <header>utils/manipulationtableview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
