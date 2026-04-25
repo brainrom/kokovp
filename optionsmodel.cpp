@@ -3,6 +3,43 @@
 #include <QIODevice>
 #include <qmimedata.h>
 
+QList<OptionsModel::OptionItem> OptionsModel::parseText(QString data)
+{
+    QList<OptionItem> newItems;
+    QStringList lines = data.split('\n');
+    for (auto &l : lines)
+    {
+        if (l.isEmpty())
+            continue;
+        l = l.trimmed();
+        OptionItem item { .enabled = true };
+        if (l.startsWith('#'))
+        {
+            item.enabled = false;
+            l.removeFirst();
+        }
+        QStringList kv = l.split('=');
+        switch (kv.length())
+        {
+        case 1:
+            item.name  = kv.at(0).trimmed();
+            break;
+        case 2:
+            item.name  = kv.at(0).trimmed();
+            item.value = kv.at(1).trimmed();
+            break;
+        default:
+            continue;
+        }
+
+        if (item.name.isEmpty())
+            continue;
+
+        newItems.append(item);
+    }
+    return newItems;
+}
+
 OptionsModel::OptionsModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
@@ -31,7 +68,6 @@ QVariant OptionsModel::headerData(int section, Qt::Orientation orientation, int 
 QMimeData *OptionsModel::mimeData(const QModelIndexList &indexes) const
 {
     QMimeData *mimeData = new QMimeData;
-    QByteArray encodedData;
 
     QList<int> rows;
     QString textFormat;
@@ -41,7 +77,12 @@ QMimeData *OptionsModel::mimeData(const QModelIndexList &indexes) const
             int row = index.row();
             rows.append(row);
             const OptionItem &kv = values.at(row);
-            textFormat.append(QString("%1%2=%3\n").arg(kv.enabled ? "" : "#", kv.name, kv.value));
+            if (kv.name.isEmpty())
+                continue;
+            if (kv.value.isEmpty())
+                textFormat.append(QString("%1%2\n").arg(kv.enabled ? "" : "#", kv.name));
+            else
+                textFormat.append(QString("%1%2=%3\n").arg(kv.enabled ? "" : "#", kv.name, kv.value));
         }
     }
 
@@ -53,7 +94,6 @@ QStringList OptionsModel::mimeTypes() const
 {
     return QStringList{"text/plain"};
 }
-
 
 Qt::DropActions OptionsModel::supportedDropActions() const
 {
@@ -91,28 +131,7 @@ bool OptionsModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
     else
         beginRow = rowCount(QModelIndex()) - 1;
 
-
-    QList<OptionItem> newItems;
-    QString text = data->text();
-    QStringList lines = text.split('\n');
-    for (auto &l : lines)
-    {
-        if (l.isEmpty())
-            continue;
-        OptionItem item { .enabled = true };
-        if (l.startsWith('#'))
-        {
-            item.enabled = false;
-            l.removeFirst();
-        }
-        QStringList kv = l.split('=');
-        if (kv.length()!=2)
-            continue;
-        item.name = kv.at(0);
-        item.value = kv.at(1);
-        newItems.append(item);
-    }
-    addItems(newItems, beginRow);
+    addItems(parseText(data->text()), beginRow);
 
     return true;
 }

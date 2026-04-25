@@ -34,6 +34,8 @@ class OptionsModel : public QAbstractTableModel
         OptionsModel_Enabled
     };
 
+    static QList<OptionItem> parseText(QString data);
+
     explicit OptionsModel(QObject *parent = nullptr);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
