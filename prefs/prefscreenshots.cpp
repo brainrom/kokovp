@@ -49,8 +49,8 @@ void PrefScreenshots::save()
 {
     Config::i().beginGroup("screenshots");
     Config::i().set("dir", ui->screenshot_edit->text());
-    Config::i().get("template", ui->screenshot_template_label->text());
-    Config::i().get("format", ui->screenshot_format_combo->currentText());
+    Config::i().set("template", ui->screenshot_template_edit->text());
+    Config::i().set("format", ui->screenshot_format_combo->currentText());
     Config::i().endGroup();
 }
 
