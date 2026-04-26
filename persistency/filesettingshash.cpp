@@ -47,7 +47,8 @@ QString FileSettingsHash::configFile(const QString & filename) {
     return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
 }
 
-QString FileSettingsHash::configFileSHA256(const QString & filename) {
+QString FileSettingsHash::fileHash(const QString &filename)
+{
     QFile file(filename);
 
     if (!file.exists()) {
@@ -64,6 +65,11 @@ QString FileSettingsHash::configFileSHA256(const QString & filename) {
     QString hash = FileHash::calculateHashSHA256(&file, salt);
     if (hash.isEmpty())
         return QString();
+    return hash;
+}
+
+QString FileSettingsHash::configFileSHA256(const QString & filename) {
+    QString hash = fileHash(filename);
     return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
 }
 

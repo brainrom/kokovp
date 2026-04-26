@@ -36,6 +36,7 @@ public:
     bool saveSettingsFor(QString filename, bool saveTimepos = true);
     QStringList loadExtFilesList(QString filename);
     void saveExtFilesList(QString filename, const QStringList &extFilesList);
+    QString fileHash(const QString & filename);
 private:
     bool settingsFor(QString filename, QString &path);
     void updateCurrentProps(QVariant value);
