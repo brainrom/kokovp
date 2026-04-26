@@ -392,6 +392,7 @@ void KokoVP::readConfig()
     player->setScreenshotOpts(Config::i().get("dir", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)).toString(),
                               Config::i().get("template", "cap_%F_%p_%02n").toString(),
                               Config::i().get("format", "jpg").toString());
+    player->setSaveScreenshotsMetadata(Config::i().get("save_metadata", false).toBool());
     Config::i().endGroup();
 
     // Ext files

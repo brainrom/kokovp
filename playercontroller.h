@@ -45,6 +45,7 @@ public:
     };
 
     explicit PlayerController(PlayerWidget *parent = nullptr);
+    void setSaveScreenshotsMetadata(bool on);
 
     QString currentFile() { return getProp("path").toString(); }
     QString lastOpenFile() { return lastFile; }
@@ -103,6 +104,8 @@ private:
 
     QString lastFile;
     bool haveFile = false;
+
+    bool saveMetadata = false;
 };
 
 #endif // PLAYERCONTROLLER_H

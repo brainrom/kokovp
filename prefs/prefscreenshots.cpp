@@ -29,6 +29,9 @@ PrefScreenshots::PrefScreenshots(QWidget *parent)
     selectPath->setIcon(QIcon::fromTheme("folder-open"));
     connect(selectPath, &QAction::triggered, this, &PrefScreenshots::selectScreenshotsFolder);
     ui->screenshot_edit->addAction(selectPath, QLineEdit::TrailingPosition);
+#if !USE_EXIV2
+    ui->screenshot_save_metadata->setVisible(false);
+#endif
 }
 
 PrefScreenshots::~PrefScreenshots()
@@ -42,6 +45,7 @@ void PrefScreenshots::load()
     ui->screenshot_edit->setText(Config::i().get("dir").toString());
     ui->screenshot_template_edit->setText(Config::i().get("template").toString());
     ui->screenshot_format_combo->setCurrentText(Config::i().get("format").toString());
+    ui->screenshot_save_metadata->setChecked(Config::i().get("save_metadata").toBool());
     Config::i().endGroup();
 }
 
@@ -51,6 +55,7 @@ void PrefScreenshots::save()
     Config::i().set("dir", ui->screenshot_edit->text());
     Config::i().set("template", ui->screenshot_template_edit->text());
     Config::i().set("format", ui->screenshot_format_combo->currentText());
+    Config::i().set("save_metadata", ui->screenshot_save_metadata->isChecked());
     Config::i().endGroup();
 }
 

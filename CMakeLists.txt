@@ -22,6 +22,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools Ope
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(mpv REQUIRED mpv)
 
+find_package(exiv2)
+
 # Libraries
 set(LIBRARIES
     Qt${QT_VERSION_MAJOR}::Core
@@ -31,6 +33,10 @@ set(LIBRARIES
     Qt${QT_VERSION_MAJOR}::Xml
     ${mpv_LIBRARIES}
 )
+
+if (exiv2_FOUND)
+    set(LIBRARIES ${LIBRARIES} Exiv2::exiv2lib)
+endif()
 
 set(TS_FILES KokoVP_ru_RU.ts)
 
@@ -141,6 +147,12 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
 add_executable(kokovp ${MOC_FILES} ${FORMS} ${MAIN_SRC} ${QRC_CPP})
 target_link_libraries(kokovp ${LIBRARIES})
+
+if (exiv2_FOUND)
+    target_compile_definitions(kokovp PUBLIC USE_EXIV2=1)
+else()
+    target_compile_definitions(kokovp PUBLIC USE_EXIV2=0)
+endif()
 
 qt_add_resources(kokovp "translations" BASE ${CMAKE_BINARY_DIR} PREFIX "i18n" FILES ${QM_FILES})
 # Awesome ¯\_(ツ)_/¯

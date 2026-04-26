@@ -18,6 +18,13 @@
 #include "extensions.h"
 #include "playerwidget.h"
 #include "helper.h"
+#include <QClipboard>
+#include <QMessageBox>
+#include <QApplication>
+
+#if USE_EXIV2
+#include "exiv2/exiv2.hpp"
+#endif
 
 PlayerController::PlayerController(PlayerWidget *parent)
     : QObject{parent}
@@ -29,6 +36,11 @@ PlayerController::PlayerController(PlayerWidget *parent)
     connect(p, &PlayerWidget::fileLoaded, this, &PlayerController::handleFileLoad);
     connect(p, &PlayerWidget::endFile, this, &PlayerController::endFile);
     connect(p, &PlayerWidget::endFile, this, &PlayerController::handleFileEnd);
+}
+
+void PlayerController::setSaveScreenshotsMetadata(bool on)
+{
+    saveMetadata = on;
 }
 
 PropertyObserver *PlayerController::prop(QString name)
@@ -143,10 +155,61 @@ void PlayerController::setScreenshotOpts(const QString &dir, const QString &scrT
 void PlayerController::screenshot(const QString &outPath, bool includeSubs)
 {
     const char *scrFlags = includeSubs ? "subtitles" : "video";
+    // It's important to get it here, until video advance
+    QString subsText = p->getProp("sub-text").toString();
+
+    QVariant resultingPath;
+    QString  resultingPathString;
     if (outPath.length()>0)
-        p->command(QVariantList({"screenshot-to-file", outPath, scrFlags}));
+        resultingPath = p->command(QVariantList({"screenshot-to-file", outPath, scrFlags}));
     else
-        p->command(QVariantList({"screenshot", scrFlags}));
+        resultingPath = p->command(QVariantList({"screenshot", scrFlags}));
+    resultingPathString = resultingPath.toMap().value("filename").toString();
+
+    if (resultingPathString.isEmpty() || !QFile::exists(resultingPathString))
+    {
+        QMessageBox::warning(p,
+                             tr("Screenshot"),
+                             tr("Screenshot wasn't saved. Something is wrong"));
+        return;
+    }
+
+#if USE_EXIV2
+    if (!saveMetadata)
+        return;
+
+    try {
+        bool isOk = false;
+        auto image = Exiv2::ImageFactory::open(resultingPathString.toUtf8().constData());
+        if (!image) {
+            qWarning() << QObject::tr("Failed to open image");
+            return;
+        }
+
+        image->readMetadata();
+
+        Exiv2::XmpData &xmp = image->xmpData();
+
+        xmp["Xmp.dc.description"] = subsText.toStdString();
+        xmp["Xmp.xmp.CreatorTool"] = QString("%1 %2").arg(QApplication::applicationName(), QApplication::applicationVersion()).toStdString();
+        xmp["Xmp.dc.source"] = QFileInfo(currentFile()).fileName().toStdString();
+        //xmp["Xmp.xmpMM.InstanceID"] = // TODO: Store file hash
+
+        Exiv2::XmpProperties::registerNs(
+            "https://kokokoshka.com/ns/kokovp/1.3/",
+            "kokovp");
+
+        double timestamp = getProp("time-pos").toDouble(&isOk);
+        if (isOk)
+            xmp["Xmp.kokovp.SourceTimestamp"] = QString::number(timestamp, 'f', 3).toStdString();
+
+        image->setXmpData(xmp);
+        image->writeMetadata();
+    }
+    catch (const Exiv2::Error &e) {
+        qWarning() << QObject::tr("Exiv2 error:") << e.what();
+    }
+#endif
 }
 
 void PlayerController::subSeek(int skip, bool secondary)
