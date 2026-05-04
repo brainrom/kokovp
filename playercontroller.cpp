@@ -189,8 +189,9 @@ void PlayerController::screenshot(const QString &outPath, bool includeSubs)
         image->readMetadata();
 
         Exiv2::XmpData &xmp = image->xmpData();
+        if (includeSubs)
+            xmp["Xmp.dc.description"] = subsText.toStdString();
 
-        xmp["Xmp.dc.description"] = subsText.toStdString();
         xmp["Xmp.xmp.CreatorTool"] = QString("%1 %2").arg(QApplication::applicationName(), QApplication::applicationVersion()).toStdString();
         xmp["Xmp.dc.source"] = QFileInfo(currentFile()).fileName().toStdString();
         //xmp["Xmp.xmpMM.InstanceID"] = // TODO: Store file hash
