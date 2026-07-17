@@ -18,18 +18,11 @@ QList<OptionsModel::OptionItem> OptionsModel::parseText(QString data)
             item.enabled = false;
             l.removeFirst();
         }
-        QStringList kv = l.split('=');
-        switch (kv.length())
+        qsizetype kvIdx = l.indexOf("=");
+        if (kvIdx>0)
         {
-        case 1:
-            item.name  = kv.at(0).trimmed();
-            break;
-        case 2:
-            item.name  = kv.at(0).trimmed();
-            item.value = kv.at(1).trimmed();
-            break;
-        default:
-            continue;
+            item.name = l.left(kvIdx);
+            item.value = l.mid(kvIdx+1);
         }
 
         if (item.name.isEmpty())
