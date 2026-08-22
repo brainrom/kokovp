@@ -70,7 +70,10 @@ QString FileSettingsHash::fileHash(const QString &filename)
 
 QString FileSettingsHash::configFileSHA256(const QString & filename) {
     QString hash = fileHash(filename);
-    return base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
+    if (hash.isEmpty())
+        return QString();
+
+    return base_dir +"/"+ hash.at(0) +"/"+ hash + ".ini";
 }
 
 QByteArray FileSettingsHash::loadOrCreateSalt()
@@ -91,6 +94,10 @@ QByteArray FileSettingsHash::loadOrCreateSalt()
 bool FileSettingsHash::settingsFor(QString filename, QString &path)
 {
     QString config_file = configFileSHA256(filename);
+
+    if (config_file.isEmpty())
+        return false;
+
     if (!QFile::exists(config_file))
     {
         QString config_file_old = configFile(filename);
@@ -98,9 +105,6 @@ bool FileSettingsHash::settingsFor(QString filename, QString &path)
             return false;
         QFile::rename(config_file_old, config_file);
     }
-
-    if (config_file.isEmpty())
-        return false;
 
     path = config_file;
     return true;
