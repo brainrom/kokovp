@@ -24,6 +24,10 @@ QList<OptionsModel::OptionItem> OptionsModel::parseText(QString data)
             item.name = l.left(kvIdx);
             item.value = l.mid(kvIdx+1);
         }
+        else
+        {
+            item.name = l;
+        }
 
         if (item.name.isEmpty())
             continue;
